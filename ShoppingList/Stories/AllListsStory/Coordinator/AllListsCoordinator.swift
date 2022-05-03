@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol AllListsCoordinatorOutput {
+	func updateList(_ list: ShoppingList)
+}
+
 protocol AllListsModuleOutput: AnyObject {
     func openShoppingList(_ list: ShoppingList)
 }

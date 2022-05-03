@@ -7,9 +7,6 @@
 
 import UIKit
 
-protocol AllListsCoordinatorOutput {
-	func updateList(_ list: ShoppingList)
-}
 
 protocol ListModuleOutput: AnyObject {
     func didSelectItem(_ item: Item)

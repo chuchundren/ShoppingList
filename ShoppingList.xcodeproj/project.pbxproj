@@ -107,11 +107,109 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4B62FA29276FCB8100E65683 /* List screen */ = {
+		03671BD22821AC8100857860 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				4B8ECE1A2746B1ED00396685 /* ProfileViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		03671BD32821AC9700857860 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				03671BD02821469500857860 /* ProfilePresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		03671BD42821ACA500857860 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				4B8ECE4D2752E8FD00396685 /* UserProfileCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		03671BD72821AD7300857860 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				4BD534C9271B4A69002A8936 /* AllListsViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		03671BD82821AD7B00857860 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				4BA6A758276139E6000D2ACD /* AllListsPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		03671BD92821AD8700857860 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				4B8ECE4B2752E8F000396685 /* AllListsCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		03671BDA2821ADAB00857860 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
 				4BCF2EA726FA3E9900CBC299 /* ListViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		03671BDB2821ADB300857860 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
 				4B8ECE1C2746EDC700396685 /* ListPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		03671BDC2821ADBE00857860 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				4B8ECE492752D77300396685 /* ListCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		03671BDD2821ADC800857860 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				4B62FA2D276FD3E800E65683 /* EditItemCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		03671BDE2821ADEB00857860 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				764FB6B427B3EC3E003B77B5 /* EditItemView.swift */,
+				4B62FA2B276FCBC900E65683 /* EditItemViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		03671BDF2821ADFC00857860 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				4BDF0AAC277E66E100573862 /* EditItemPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		4B62FA29276FCB8100E65683 /* List screen */ = {
+			isa = PBXGroup;
+			children = (
+				03671BDA2821ADAB00857860 /* Controller */,
+				03671BDB2821ADB300857860 /* Presenter */,
+				03671BDC2821ADBE00857860 /* Coordinator */,
 			);
 			path = "List screen";
 			sourceTree = "<group>";
@@ -119,9 +217,9 @@
 		4B62FA2A276FCB9200E65683 /* EditItem screen */ = {
 			isa = PBXGroup;
 			children = (
-				764FB6B427B3EC3E003B77B5 /* EditItemView.swift */,
-				4B62FA2B276FCBC900E65683 /* EditItemViewController.swift */,
-				4BDF0AAC277E66E100573862 /* EditItemPresenter.swift */,
+				03671BDE2821ADEB00857860 /* Controller */,
+				03671BDF2821ADFC00857860 /* Presenter */,
+				03671BDD2821ADC800857860 /* Coordinator */,
 			);
 			path = "EditItem screen";
 			sourceTree = "<group>";
@@ -135,22 +233,10 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		4B62FA30276FD58C00E65683 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				4B8ECE492752D77300396685 /* ListCoordinator.swift */,
-				4B8ECE4B2752E8F000396685 /* AllListsCoordinator.swift */,
-				4B8ECE4D2752E8FD00396685 /* UserProfileCoordinator.swift */,
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
 		4B8ECE462752D62F00396685 /* Coordinators */ = {
 			isa = PBXGroup;
 			children = (
 				4B62FA2F276FD57700E65683 /* Main */,
-				4B62FA30276FD58C00E65683 /* Core */,
-				4B62FA2D276FD3E800E65683 /* EditItemCoordinator.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -167,8 +253,9 @@
 		4B8ECE542753969400396685 /* AllListsStory */ = {
 			isa = PBXGroup;
 			children = (
-				4BD534C9271B4A69002A8936 /* AllListsViewController.swift */,
-				4BA6A758276139E6000D2ACD /* AllListsPresenter.swift */,
+				03671BD72821AD7300857860 /* Controller */,
+				03671BD82821AD7B00857860 /* Presenter */,
+				03671BD92821AD8700857860 /* Coordinator */,
 			);
 			path = AllListsStory;
 			sourceTree = "<group>";
@@ -177,8 +264,9 @@
 			isa = PBXGroup;
 			children = (
 				4BB9D3CA27A5E83F008574BE /* Views */,
-				4B8ECE1A2746B1ED00396685 /* ProfileViewController.swift */,
-				03671BD02821469500857860 /* ProfilePresenter.swift */,
+				03671BD22821AC8100857860 /* Controller */,
+				03671BD32821AC9700857860 /* Presenter */,
+				03671BD42821ACA500857860 /* Coordinator */,
 				03671BCC281DC19F00857860 /* TimePeriodPopover.swift */,
 			);
 			path = UserProfileStory;
@@ -242,7 +330,6 @@
 			children = (
 				762369F127AEE9F5006B1807 /* App */,
 				4BCF2EB726FA3F0C00CBC299 /* DesignSystem */,
-				4B8ECE462752D62F00396685 /* Coordinators */,
 				764FB70B27B5487C003B77B5 /* Stories */,
 				4BCF2EAC26FA3EA100CBC299 /* Assets.xcassets */,
 				4BCF2EAE26FA3EA100CBC299 /* LaunchScreen.storyboard */,
@@ -254,6 +341,7 @@
 		4BCF2EB726FA3F0C00CBC299 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				4B8ECE462752D62F00396685 /* Coordinators */,
 				4BCF2EBD26FA40FF00CBC299 /* Extensions */,
 				4BF40990272B124C00CD749F /* Views */,
 				4BB9D3D727A7077E008574BE /* Protocols */,
