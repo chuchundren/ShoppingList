@@ -19,10 +19,6 @@ class EditItemViewController: UIViewController {
     
     let editView = EditItemView()
     let deleteButton = makeButton()
-    let labelsCollection = UICollectionView(
-        frame: .zero,
-        collectionViewLayout: UICollectionViewFlowLayout()
-    )
     
     var presenter: EditItemScreenOutput?
     var labels: [ItemLabel] = [.healthy, .junk, .snack, .utilities, .other, .healthy, .healthy, .snack, .utilities, .utilities, .junk]
@@ -31,7 +27,6 @@ class EditItemViewController: UIViewController {
         super.viewDidLoad()
 
         setupView()
-        setupCollectionView()
         setupNavigationBar()
         
         presenter?.viewDidLoad()
@@ -60,50 +55,6 @@ extension EditItemViewController: EditItemScreen {
     
 }
 
-// MARK: - UICollectionViewDataSource
-
-extension EditItemViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        labels.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LabelCell.identifier, for: indexPath) as? LabelCell else {
-            return UICollectionViewCell()
-        }
-        
-        let label = labels[indexPath.item]
-        let viewModel = LabelCell.ViewModel(title: label.title, color: label.color)
-
-        cell.configure(with: viewModel)
-        return cell
-    }
-    
-}
-
-// MARK: - UICollectionViewDelegateFlowLayout
-
-extension EditItemViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let label = labels[indexPath.item]
-        let width = label.title.size(withAttributes: [.font : UIFont.systemFont(ofSize: 17, weight: .semibold)]).width + 24
-        
-        let height: CGFloat = 32
-        
-        return CGSize(width: width, height: height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        8
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-    }
-    
-}
-
 // MARK: - GradientNavigationBarTitleTrait
 
 extension EditItemViewController: GradientNavigationBarTitleTrait {}
@@ -115,7 +66,9 @@ private extension EditItemViewController {
     // MARK: Setup
     
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(
+			anyModeColor: .secondaryBg,
+			darkModeColor: .bg)
         view.addGestureRecognizer(
             UITapGestureRecognizer(
                 target: nil,
@@ -124,13 +77,6 @@ private extension EditItemViewController {
         )
         
         deleteButton.addTarget(self, action: #selector(didTapDeleteButton), for: .touchUpInside)
-    }
-    
-    func setupCollectionView() {
-        labelsCollection.dataSource = self
-        labelsCollection.delegate = self
-        labelsCollection.register(LabelCell.self, forCellWithReuseIdentifier: LabelCell.identifier)
-        labelsCollection.backgroundColor = .clear
     }
     
     func setupNavigationBar() {
@@ -154,18 +100,12 @@ private extension EditItemViewController {
     
     func setupLayout() {
         view.addSubviews(editView,
-                         labelsCollection,
                          deleteButton)
         
         NSLayoutConstraint.activate([
         editView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
         editView.topAnchor.constraint(equalTo: view.topAnchor),
         editView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        
-        labelsCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        labelsCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        labelsCollection.topAnchor.constraint(equalTo: editView.bottomAnchor, constant: 16),
-        labelsCollection.bottomAnchor.constraint(equalTo: deleteButton.topAnchor, constant: 16),
         
         deleteButton.heightAnchor.constraint(equalToConstant: 44),
         deleteButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),

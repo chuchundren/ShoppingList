@@ -7,57 +7,62 @@
 
 import UIKit
 
-class UserProfileViewController: UIViewController {
+protocol ProfileScreen: UIPopoverPresentationControllerDelegate {
+	func reloadData()
+}
+
+class ProfileViewController: UIViewController {
     
     private let collectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: CompositionalLayout.makeLayout()
     )
+	
+	var presenter: ProfileScreenOutput?
+	var timePeriod: TimePeriod = .thisWeek
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupView()
-        setupSubviews()
+        setupCollectionView()
         setupLayout()
     }
     
 }
 
-extension UserProfileViewController: UICollectionViewDataSource {
+extension ProfileViewController: ProfileScreen {
+	
+	func reloadData() {
+		collectionView.reloadData()
+	}
+	
+	func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+		return .none
+	}
+	
+}
+
+extension ProfileViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        2
+        1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        3
+        1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.section == 0 {
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: CardCell.identifier,
-                for: indexPath
-            ) as? CardCell else {
-                fatalError("Could not dequeue CardCell")
-            }
-            
-            if indexPath.item == 0 {
-                cell.configure(with: CardCell.ViewModel(view: GoalsView()))
-            } else if indexPath.item == 1 {
-                cell.configure(with: CardCell.ViewModel(view: SpendingsView()))
-            }
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "cell",
-                for: indexPath
-            )
-            
-            cell.backgroundColor = .systemTeal
-            return cell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExpensesCell.identifier,
+                                                            for: indexPath) as? ExpensesCell else {
+            fatalError("Could not dequeue CardCell")
         }
+		cell.setTimePeriod(timePeriod)
+		cell.delegate = self
+		
+        return cell
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -76,11 +81,19 @@ extension UserProfileViewController: UICollectionViewDataSource {
 
 // MARK: - GradientNavigationBarTitleTrait
 
-extension UserProfileViewController: GradientNavigationBarTitleTrait {}
+extension ProfileViewController: GradientNavigationBarTitleTrait {}
+
+extension ProfileViewController: UserExpensesCellDelegate {
+	
+	func didTapTimePeriodButton(sender: UIButton) {
+		presenter?.didTapSelectTimePeriodButton(sender: sender)
+	}
+}
+
 
 // MARK: - Private methods
 
-private extension UserProfileViewController {
+private extension ProfileViewController {
     
     func setupView() {
         title = "Profile"
@@ -91,21 +104,23 @@ private extension UserProfileViewController {
             action: #selector(openSettings)
         )
         
+		navigationController?.navigationBar.tintColor = .systemTeal
         view.backgroundColor = .bg
         configureGradient(in: title)
     }
     
-    func setupSubviews() {
+    func setupCollectionView() {
         collectionView.backgroundColor = .bg
         collectionView.dataSource = self
         
-        collectionView.register(CardCell.self, forCellWithReuseIdentifier: CardCell.identifier)
+        collectionView.register(ExpensesCell.self, forCellWithReuseIdentifier: ExpensesCell.identifier)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.register(
             UserHeaderView.self,
             forSupplementaryViewOfKind: SupplementaryViewKind.header.rawValue,
             withReuseIdentifier: UserHeaderView.identifier
         )
+        collectionView.alwaysBounceVertical = false
     }
     
     func setupLayout() {
@@ -120,7 +135,7 @@ private extension UserProfileViewController {
     }
     
     @objc func openSettings() {
-        
-    }
+		presenter?.didTapSettingsBarButton()
+	}
     
 }

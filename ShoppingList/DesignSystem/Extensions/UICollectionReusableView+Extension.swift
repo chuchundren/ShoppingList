@@ -7,10 +7,18 @@
 
 import UIKit
 
-extension UICollectionReusableView {
-    
-    static var identifier: String {
-        String(describing: self)
-    }
-    
+protocol ReusableView {
+	static var identifier: String { get }
 }
+
+extension ReusableView {
+	
+	static var identifier: String {
+		String(describing: self)
+	}
+	
+}
+
+extension UICollectionReusableView: ReusableView {}
+
+extension UITableViewCell: ReusableView {}

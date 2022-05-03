@@ -72,7 +72,7 @@ private extension ListCell {
     // MARK: Setup
     
     func setupView() {
-        backgroundColor = .white
+        backgroundColor = .secondaryBg
         layer.cornerRadius = 14
     }
     
@@ -119,10 +119,10 @@ private extension ListCell {
             priceLabel.isHidden = true
             quantityLabel.isHidden = true
         case let .listItem(quantity, _, _):
-            quantityLabel.text = "\(quantity)x"
+            quantityLabel.text = "X\(quantity)"
             priceLabel.isHidden = true
         case let .recentItem(price, quantity):
-            quantityLabel.text = "\(quantity)x"
+            quantityLabel.text = "X\(quantity)"
             priceLabel.text = price
         }
     }

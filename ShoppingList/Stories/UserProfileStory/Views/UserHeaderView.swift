@@ -44,6 +44,7 @@ private extension UserHeaderView {
     
     func setupSubviews() {
         avatarImageView.image = UIImage(systemName: "person.fill")
+		avatarImageView.tintColor = .systemTeal
         nameLabel.text = "Chuchundren Michaelson"
         locationLabel.text = "Saint-Petersburg, Russia"
     }

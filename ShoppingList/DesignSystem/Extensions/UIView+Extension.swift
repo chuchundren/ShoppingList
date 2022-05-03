@@ -8,17 +8,80 @@
 import UIKit
 
 extension UIView {
+
+	func top(equalTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.topAnchor.constraint(equalTo: item, constant: constant)
+	}
+	func top(lessThanOrEqualTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.topAnchor.constraint(lessThanOrEqualTo: item, constant: constant)
+	}
+	func top(greaterThanOrEqualTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.topAnchor.constraint(greaterThanOrEqualTo: item, constant: constant)
+	}
+
+	func bottom(equalTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.bottomAnchor.constraint(equalTo: item, constant: constant)
+	}
+	func bottom(lessThanOrEqualTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.bottomAnchor.constraint(lessThanOrEqualTo: item, constant: constant)
+	}
+	func bottom(greaterThanOrEqualTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.bottomAnchor.constraint(greaterThanOrEqualTo: item, constant: constant)
+	}
+
+	func leading(equalTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.leadingAnchor.constraint(equalTo: item, constant: constant)
+	}
+	func leading(lessThanOrEqualTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.leadingAnchor.constraint(lessThanOrEqualTo: item, constant: constant)
+	}
+	func leading(greaterThanOrEqualTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.leadingAnchor.constraint(greaterThanOrEqualTo: item, constant: constant)
+	}
+
+	func trailing(equalTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.trailingAnchor.constraint(equalTo: item, constant: constant)
+	}
+	func trailing(lessThanOrEqualTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.trailingAnchor.constraint(lessThanOrEqualTo: item, constant: constant)
+	}
+	func trailing(greaterThanOrEqualTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.trailingAnchor.constraint(greaterThanOrEqualTo: item, constant: constant)
+	}
+
+	func centerX(equalTo item: NSLayoutXAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.centerXAnchor.constraint(equalTo: item, constant: constant)
+	}
+
+	func centerY(equalTo item: NSLayoutYAxisAnchor, constant: CGFloat = 0) -> NSLayoutConstraint {
+		self.centerYAnchor.constraint(equalTo: item, constant: constant)
+	}
+
+}
+
+extension UIView {
     
     func addSubviews(_ subviews: UIView...) {
         subviews.forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             addSubview($0)
         }
+
     }
+
+	func addSubviews(_ subviews: UIView..., constraints: [NSLayoutConstraint]) {
+		subviews.forEach {
+			$0.translatesAutoresizingMaskIntoConstraints = false
+			addSubview($0)
+		}
+
+		NSLayoutConstraint.activate(constraints)
+	}
 
     func removeAllSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
+	
 }
 
 // MARK: - Layout

@@ -15,8 +15,13 @@ class EditItemView: UIView {
     
     let titleTextView = makeTextView(for: .title)
     let descriptionTextView = makeTextView(for: .description)
-    let stepper = makeStepper()
-    let quantityLabel = makeLabel(for: .quantity)
+
+	let stepper: Stepper = {
+		let stepper = Stepper()
+		stepper.minimalValue = 1
+		return stepper
+	}()
+
     let priceLabel = makeLabel(for: .price)
     let priceForOneTextView = makeTextView(for: .priceForOne)
     let priceInTotalTextView = makeTextView(for: .priceInTotal)
@@ -42,8 +47,7 @@ class EditItemView: UIView {
             descriptionTextView.placeholder = nil
         }
         
-        stepper.value = Double(item.quantity)
-        quantityLabel.text = "Quantity: \(item.quantity)"
+        stepper.value = item.quantity
     }
     
     func validateNewItem() -> Item? {
@@ -62,7 +66,7 @@ class EditItemView: UIView {
             title: title,
             description: description,
             label: nil,
-            quantity: Int(stepper.value)
+            quantity: stepper.value
         )
         
         return item
@@ -77,7 +81,7 @@ private extension EditItemView {
     // MARK: Setup
     
     func setupView() {
-        backgroundColor = .white
+        backgroundColor = .clear
         addGestureRecognizer(
             UITapGestureRecognizer(
                 target: self,
@@ -87,13 +91,6 @@ private extension EditItemView {
     }
     
     func setupSubviews() {
-        stepper.addAction(for: .valueChanged) { [weak self] _ in
-            guard let self = self else { return }
-            
-            self.quantityLabel.text = "Quantity: \(Int(self.stepper.value))"
-            self.configureTotalPrice()
-        }
-        
         titleTextView.delegate = self
         priceForOneTextView.delegate = self
         priceInTotalTextView.delegate = self
@@ -105,32 +102,27 @@ private extension EditItemView {
         let priceStack = makePriceStack()
         addSubviews(titleTextView,
                     descriptionTextView,
-                    quantityLabel,
                     stepper,
                     priceStack)
         
         NSLayoutConstraint.activate([
             titleTextView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             titleTextView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleTextView.trailingAnchor.constraint(equalTo: trailingAnchor),
+			titleTextView.trailingAnchor.constraint(equalTo: stepper.leadingAnchor, constant: -12),
             titleTextView.heightAnchor.constraint(equalToConstant: 40),
-            
+
+			stepper.centerYAnchor.constraint(equalTo: titleTextView.centerYAnchor),
+			stepper.heightAnchor.constraint(equalTo: titleTextView.heightAnchor),
+			stepper.trailingAnchor.constraint(equalTo: trailingAnchor),
+
             descriptionTextView.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 8),
             descriptionTextView.leadingAnchor.constraint(equalTo: titleTextView.leadingAnchor),
-            descriptionTextView.trailingAnchor.constraint(equalTo: titleTextView.trailingAnchor),
+            descriptionTextView.trailingAnchor.constraint(equalTo: trailingAnchor),
             descriptionTextView.heightAnchor.constraint(equalToConstant: 100),
             
-            quantityLabel.centerYAnchor.constraint(equalTo: stepper.centerYAnchor),
-            quantityLabel.leadingAnchor.constraint(equalTo: titleTextView.leadingAnchor),
-            quantityLabel.trailingAnchor.constraint(equalTo: stepper.leadingAnchor),
-            
-            stepper.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16),
-            stepper.leadingAnchor.constraint(equalTo: quantityLabel.trailingAnchor),
-            stepper.trailingAnchor.constraint(equalTo: titleTextView.trailingAnchor),
-            
-            priceStack.topAnchor.constraint(equalTo: stepper.bottomAnchor, constant: 16),
-            priceStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            priceStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+			priceStack.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16),
+			priceStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            priceStack.trailingAnchor.constraint(equalTo: trailingAnchor),
             priceStack.heightAnchor.constraint(equalToConstant: 40),
             priceStack.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
@@ -155,7 +147,7 @@ private extension EditItemView {
         stack.distribution = .fill
         stack.alignment = .center
         stack.spacing = 12
-        
+
         return stack
     }
     
@@ -171,7 +163,7 @@ private extension EditItemView {
     
     func configureTotalPrice() {
         if let text = priceForOneTextView.text, let price = Double(text) {
-            let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price * stepper.value))
+            let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price * Double(stepper.value)))
             priceInTotalTextView.text = formattedPrice
         }
     }
@@ -186,7 +178,7 @@ private extension EditItemView {
         let textView = UITextView()
         textView.font = .systemFont(ofSize: 16)
         textView.layer.cornerRadius = 8
-        textView.backgroundColor = .bg
+		textView.backgroundColor = Constants.viewBackgroundColor
         
         if purpose == .title {
             textView.placeholder = "Enter item's title"
@@ -237,7 +229,7 @@ extension EditItemView: UITextViewDelegate {
             configureTotalPrice()
         } else if textView == priceInTotalTextView {
             if let text = priceInTotalTextView.text, let price = Double(text) {
-                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price / stepper.value))
+                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price / Double(stepper.value)))
                 priceForOneTextView.text = formattedPrice
             }
         }
@@ -246,12 +238,12 @@ extension EditItemView: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView == priceForOneTextView {
             if let text = priceForOneTextView.text, let price = Double(text) {
-                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price * stepper.value))
+                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price * Double(stepper.value)))
                 priceForOneTextView.text = formattedPrice
             }
         } else if textView == priceInTotalTextView {
             if let text = priceInTotalTextView.text, let price = Double(text) {
-                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price / stepper.value))
+                let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: price / Double(stepper.value)))
                 priceInTotalTextView.text = formattedPrice
             }
         }
@@ -266,9 +258,28 @@ private extension EditItemView {
     enum TextFieldPurpose {
         case title, description, priceForOne, priceInTotal
     }
+
+}
+
+// MARK: - LabelPurpose
+
+private extension EditItemView {
     
     enum LabelPurpose {
         case quantity, price
     }
     
+}
+
+// MARK: - Constants
+
+private extension EditItemView {
+
+	enum Constants {
+		static let viewBackgroundColor = UIColor(
+			anyModeColor: .bg,
+			darkModeColor: .secondaryBg
+		)
+	}
+
 }

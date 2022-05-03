@@ -35,7 +35,7 @@ class MainCoordinator: NavigationCoordinator {
                 isRecentlyBoughtList: true
             )
         ),
-        UserProfileCoordinator()
+        ProfileCoordinator()
     ]
     
     override func makeEntryPoint() -> UITabBarController {

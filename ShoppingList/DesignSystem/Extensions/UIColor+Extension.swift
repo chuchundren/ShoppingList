@@ -42,5 +42,14 @@ extension UIColor {
         anyModeColor: bgLight,
         darkModeColor: bgDark
     )
-    
+
+	static let secondaryBgLight = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+
+	static let secondaryBgDark = UIColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1)
+
+	static let secondaryBg = UIColor(
+		anyModeColor: secondaryBgLight,
+		darkModeColor: secondaryBgDark
+	)
+
 }
