@@ -20,7 +20,7 @@ class AllListsViewController: UIViewController {
     
     var shoppingLists: [ListCell.ViewModel] = []
     
-    var presenter: AllListsPresenter?
+    var presenter: AllListsScreenOutput?
     
     override func viewDidLoad() {
         super.viewDidLoad()

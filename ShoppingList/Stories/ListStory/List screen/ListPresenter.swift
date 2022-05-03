@@ -13,6 +13,7 @@ protocol ListScreenOutput {
     func obtainItems()
     func didSelectItem(at indexPath: IndexPath)
     func addItemWithTitle(_ title: String)
+	func didReturnToPreviousScreen()
 }
 
 protocol ListModuleInput {
@@ -31,6 +32,8 @@ class ListPresenter {
     
     private var list: ShoppingList
     private var selectedIndexPath: IndexPath?
+	
+	var updateListsClosure: ((ShoppingList) -> Void)?
     
     // MARK: - Initialization
     
@@ -87,6 +90,10 @@ extension ListPresenter: ListScreenOutput {
         reloadCells()
     }
     
+	func didReturnToPreviousScreen() {
+		updateListsClosure?(list)
+	}
+	
 }
 
 // MARK: - ListModuleInput

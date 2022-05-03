@@ -54,6 +54,11 @@ class ListViewController: UIViewController {
         super.viewWillAppear(animated)
         configureGradient(in: title)
     }
+	
+	override func didMove(toParent parent: UIViewController?) {
+		super.didMove(toParent: parent)
+		presenter?.didReturnToPreviousScreen()
+	}
     
 }
 

@@ -7,13 +7,18 @@
 
 import UIKit
 
+protocol AllListsCoordinatorOutput {
+	func updateList(_ list: ShoppingList)
+}
+
 protocol ListModuleOutput: AnyObject {
     func didSelectItem(_ item: Item)
 }
 
 class ListCoordinator: NavigationCoordinator {
-    var presenter: ListModuleInput?
-    var list: ShoppingList
+	var allListsCoordinator: AllListsCoordinatorOutput?
+    private var presenter: ListModuleInput?
+    private var list: ShoppingList
     
     init(list: ShoppingList) {
         self.list = list
@@ -22,6 +27,10 @@ class ListCoordinator: NavigationCoordinator {
     override func makeEntryPoint() -> UIViewController {
         let view = ListViewController()
         let presenter = ListPresenter(view: view, coordinator: self, list: list)
+		presenter.updateListsClosure = { [weak self] list in
+			self?.allListsCoordinator?.updateList(list)
+		}
+		
         self.presenter = presenter
         
         view.presenter = presenter

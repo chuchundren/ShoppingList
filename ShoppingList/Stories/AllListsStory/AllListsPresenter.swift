@@ -10,16 +10,18 @@ import Foundation
 protocol AllListsScreenOutput {
     func obtainLists()
     func didAddNewList(with title: String)
+	func openShoppingList(at index: Int)
 }
 
 protocol AllListsModuleInput {
-    func openShoppingList(at index: Int)
+	func updateList(_ list: ShoppingList)
 }
 
 
 class AllListsPresenter {
     
-    var shoppingLists: [ShoppingList] = []
+    private var shoppingLists: [ShoppingList] = []
+	private var selectedIndex: Int?
     
     private unowned let view: AllListsScreen
     private var coordinator: AllListsModuleOutput?
@@ -28,6 +30,17 @@ class AllListsPresenter {
         self.view = view
         self.coordinator = coordinator
     }
+	
+	private func configureView() {
+		 let viewModels = shoppingLists.map { list in
+			ListCell.ViewModel(
+				listTitle: list.title,
+				description: " \(list.items.count) items"
+			)
+		}
+		
+		view.configure(with: viewModels)
+	}
     
 }
 
@@ -36,6 +49,15 @@ class AllListsPresenter {
 extension AllListsPresenter: AllListsScreenOutput {
     
     func obtainLists() {
+
+		defer {
+			configureView()
+		}
+	
+		guard shoppingLists.isEmpty else {
+			return
+		}
+		
         shoppingLists = [
             ShoppingList(
                 title: "My shopping list",
@@ -69,37 +91,35 @@ extension AllListsPresenter: AllListsScreenOutput {
             ),
         ]
         
-        let viewModels = shoppingLists.map { list in
-            ListCell.ViewModel(
-                listTitle: list.title,
-                description: " \(list.items.count) items"
-            )
-        }
-        
-        view.configure(with: viewModels)
     }
     
     func didAddNewList(with title: String) {
         shoppingLists.insert(ShoppingList(title: title, items: []), at: 0)
         
-        let viewModels = shoppingLists.map { list in
-            ListCell.ViewModel(
-                listTitle: list.title,
-                description: " \(list.items.count) items"
-            )
-        }
-        
-        view.configure(with: viewModels)
+        configureView()
+		
+		if let _ = shoppingLists.first {
+			openShoppingList(at: 0)
+		}
     }
+	
+	func openShoppingList(at index: Int) {
+		coordinator?.openShoppingList(shoppingLists[index])
+		selectedIndex = index
+	}
     
 }
 
 // MARK: AllListsModuleInput
 
 extension AllListsPresenter: AllListsModuleInput {
-    
-    func openShoppingList(at index: Int) {
-        coordinator?.openShoppingList(shoppingLists[index])
-    }
-    
+	func updateList(_ list: ShoppingList) {
+		print(selectedIndex, list)
+		guard let index = selectedIndex else {
+			return
+		}
+		
+		shoppingLists[index] = list
+		configureView()
+	}
 }
