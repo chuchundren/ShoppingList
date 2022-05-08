@@ -114,7 +114,6 @@ extension AllListsPresenter: AllListsScreenOutput {
 
 extension AllListsPresenter: AllListsModuleInput {
 	func updateList(_ list: ShoppingList) {
-		print(selectedIndex, list)
 		guard let index = selectedIndex else {
 			return
 		}

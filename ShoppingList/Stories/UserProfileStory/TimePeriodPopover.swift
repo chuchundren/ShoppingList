@@ -70,31 +70,32 @@ extension TimePeriodPopover: UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: UITableViewCell.identifier, for: indexPath)
-		
-		#warning("text label deprecated")
-		cell.backgroundColor = .clear
-		cell.textLabel?.textColor = .textMain
+
+		var content = cell.defaultContentConfiguration()
+		content.textProperties.color = .textMain
 		
 		switch timePeriods[indexPath.row] {
 		case .today:
-			cell.textLabel?.text = "Today"
+			content.text =  "Today"
 		case .thisWeek:
-			cell.textLabel?.text = "This week"
+			content.text =  "This week"
 		case .thisMonth:
-			cell.textLabel?.text = "This month"
+			content.text =  "This month"
 		case let .someOtherDay(date):
 			if let date = date {
 				
 				#warning("Add formatting")
 				if #available(iOS 15.0, *) {
-					cell.textLabel?.text = date.formatted()
+					content.text = date.formatted()
 				} else {
-					cell.textLabel?.text = date.description
+					content.text = date.description
 				}
 			} else {
-				cell.textLabel?.text = "Chose date..."
+				content.text = "Chose date..."
 			}
 		}
+
+		cell.contentConfiguration = content
 		
 		return cell
 	}
