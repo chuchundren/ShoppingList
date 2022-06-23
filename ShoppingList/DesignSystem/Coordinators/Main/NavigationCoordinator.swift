@@ -36,6 +36,14 @@ class NavigationCoordinator {
         
         navigationController.pushViewController(viewController, animated: animated)
     }
+
+	func open(child: NavigationCoordinator, animated: Bool = true) {
+		open(
+			child: child,
+			navigationController: navigationController,
+			animated: animated
+		)
+	}
     
     func popToRoot() {
         navigationController.popToRootViewController(animated: true)

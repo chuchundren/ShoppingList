@@ -18,12 +18,12 @@ protocol EditItemCoordinatorOutput: AnyObject {
 }
 
 class EditItemCoordinator: NavigationCoordinator {
-    private weak var listOutput: EditItemCoordinatorOutput?
+    private weak var output: EditItemCoordinatorOutput?
     private var item: Item
     
-    init(item: Item, listOutput: EditItemCoordinatorOutput?) {
+    init(item: Item, output: EditItemCoordinatorOutput?) {
         self.item = item
-        self.listOutput = listOutput
+        self.output = output
     }
     
     override func makeEntryPoint() -> UIViewController {
@@ -40,12 +40,12 @@ class EditItemCoordinator: NavigationCoordinator {
 extension EditItemCoordinator: EditItemModuleOutput {
     
     func didConfirmEditing(of item: Item) {
-        listOutput?.didFinishEditing(item)
+        output?.didFinishEditing(item)
         pop()
     }
     
     func didConfirmDeletion() {
-        listOutput?.didDeleteItem()
+        output?.didDeleteItem()
         pop()
     }
 }

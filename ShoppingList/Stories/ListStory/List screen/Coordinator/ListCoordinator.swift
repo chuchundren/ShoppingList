@@ -7,14 +7,15 @@
 
 import UIKit
 
-
 protocol ListModuleOutput: AnyObject {
     func didSelectItem(_ item: Item)
+	func didAskToAddNewItem()
 }
 
 class ListCoordinator: NavigationCoordinator {
-	var allListsCoordinator: AllListsCoordinatorOutput?
-    private var presenter: ListModuleInput?
+	weak var output: ListCoordinatorOutput?
+	
+    private weak var presenter: ListModuleInput?
     private var list: ShoppingList
     
     init(list: ShoppingList) {
@@ -25,7 +26,7 @@ class ListCoordinator: NavigationCoordinator {
         let view = ListViewController()
         let presenter = ListPresenter(view: view, coordinator: self, list: list)
 		presenter.updateListsClosure = { [weak self] list in
-			self?.allListsCoordinator?.updateList(list)
+			self?.output?.updateList(list)
 		}
 		
         self.presenter = presenter
@@ -37,16 +38,22 @@ class ListCoordinator: NavigationCoordinator {
     }
     
 }
+
+// MARK: - ListModuleOutput
     
 extension ListCoordinator: ListModuleOutput {
     
     func didSelectItem(_ item: Item) {
-        let addNewItemCoordinator = EditItemCoordinator(item: item, listOutput: self)
-
-        // TODO: pass item to the coordinator
-        
-        open(child: addNewItemCoordinator, navigationController: navigationController)
+        let addNewItemCoordinator = EditItemCoordinator(item: item, output: self)
+        open(child: addNewItemCoordinator)
     }
+
+	func didAskToAddNewItem() {
+		let addItemCoordinator = AddItemCoordinator(output: self)
+		let view = addItemCoordinator.makeEntryPoint()
+
+		navigationController.present(view, animated: true)
+	}
     
 }
 
@@ -61,5 +68,15 @@ extension ListCoordinator: EditItemCoordinatorOutput {
     func didDeleteItem() {
         presenter?.deleteItem()
     }
-    
+
+}
+
+// MARK: - AddItemCoordinatorOutput
+
+extension ListCoordinator: AddItemCoordinatorOutput {
+
+	func didAskToSaveItem(_ item: Item) {
+		presenter?.saveNewItem(item)
+	}
+
 }

@@ -46,6 +46,11 @@
 		762369EE27AEA323006B1807 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762369ED27AEA323006B1807 /* UIImage+Extension.swift */; };
 		762369F027AEA58E006B1807 /* GradientNavigationBarTitleTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762369EF27AEA58E006B1807 /* GradientNavigationBarTitleTrait.swift */; };
 		762369F727B13796006B1807 /* UICollectionReusableView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762369F627B13796006B1807 /* UICollectionReusableView+Extension.swift */; };
+		76385ED0282864F0006A45DF /* SheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76385ECF282864F0006A45DF /* SheetController.swift */; };
+		76385ED3282A6952006A45DF /* SheetTransitionAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76385ED2282A6952006A45DF /* SheetTransitionAnimation.swift */; };
+		76385ED5282A6C90006A45DF /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76385ED4282A6C90006A45DF /* AddItemViewController.swift */; };
+		763C4E07286094F000F0134E /* AddItemCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763C4E06286094F000F0134E /* AddItemCoordinator.swift */; };
+		764E3265284BFBE200D1227A /* AddItemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764E3264284BFBE200D1227A /* AddItemPresenter.swift */; };
 		764FB6B527B3EC3E003B77B5 /* EditItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FB6B427B3EC3E003B77B5 /* EditItemView.swift */; };
 		765584AD27C77FA600040AB8 /* LayoutConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765584AC27C77FA600040AB8 /* LayoutConstants.swift */; };
 /* End PBXBuildFile section */
@@ -92,6 +97,11 @@
 		762369ED27AEA323006B1807 /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		762369EF27AEA58E006B1807 /* GradientNavigationBarTitleTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientNavigationBarTitleTrait.swift; sourceTree = "<group>"; };
 		762369F627B13796006B1807 /* UICollectionReusableView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionReusableView+Extension.swift"; sourceTree = "<group>"; };
+		76385ECF282864F0006A45DF /* SheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetController.swift; sourceTree = "<group>"; };
+		76385ED2282A6952006A45DF /* SheetTransitionAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetTransitionAnimation.swift; sourceTree = "<group>"; };
+		76385ED4282A6C90006A45DF /* AddItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
+		763C4E06286094F000F0134E /* AddItemCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemCoordinator.swift; sourceTree = "<group>"; };
+		764E3264284BFBE200D1227A /* AddItemPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemPresenter.swift; sourceTree = "<group>"; };
 		764FB6B427B3EC3E003B77B5 /* EditItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemView.swift; sourceTree = "<group>"; };
 		765584AC27C77FA600040AB8 /* LayoutConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -155,12 +165,12 @@
 			path = Coordinator;
 			sourceTree = "<group>";
 		};
-		03671BDA2821ADAB00857860 /* Controller */ = {
+		03671BDA2821ADAB00857860 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				4BCF2EA726FA3E9900CBC299 /* ListViewController.swift */,
 			);
-			path = Controller;
+			path = View;
 			sourceTree = "<group>";
 		};
 		03671BDB2821ADB300857860 /* Presenter */ = {
@@ -187,13 +197,13 @@
 			path = Coordinator;
 			sourceTree = "<group>";
 		};
-		03671BDE2821ADEB00857860 /* Controller */ = {
+		03671BDE2821ADEB00857860 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				764FB6B427B3EC3E003B77B5 /* EditItemView.swift */,
 				4B62FA2B276FCBC900E65683 /* EditItemViewController.swift */,
 			);
-			path = Controller;
+			path = View;
 			sourceTree = "<group>";
 		};
 		03671BDF2821ADFC00857860 /* Presenter */ = {
@@ -207,7 +217,7 @@
 		4B62FA29276FCB8100E65683 /* List screen */ = {
 			isa = PBXGroup;
 			children = (
-				03671BDA2821ADAB00857860 /* Controller */,
+				03671BDA2821ADAB00857860 /* View */,
 				03671BDB2821ADB300857860 /* Presenter */,
 				03671BDC2821ADBE00857860 /* Coordinator */,
 			);
@@ -217,7 +227,7 @@
 		4B62FA2A276FCB9200E65683 /* EditItem screen */ = {
 			isa = PBXGroup;
 			children = (
-				03671BDE2821ADEB00857860 /* Controller */,
+				03671BDE2821ADEB00857860 /* View */,
 				03671BDF2821ADFC00857860 /* Presenter */,
 				03671BDD2821ADC800857860 /* Coordinator */,
 			);
@@ -246,6 +256,7 @@
 			children = (
 				4B62FA29276FCB8100E65683 /* List screen */,
 				4B62FA2A276FCB9200E65683 /* EditItem screen */,
+				76385ED1282A692D006A45DF /* AddItem screen */,
 			);
 			path = ListStory;
 			sourceTree = "<group>";
@@ -384,6 +395,42 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		76385ED1282A692D006A45DF /* AddItem screen */ = {
+			isa = PBXGroup;
+			children = (
+				763C4E032860941F00F0134E /* View */,
+				763C4E042860942700F0134E /* Presenter */,
+				763C4E052860943000F0134E /* Coordinator */,
+			);
+			path = "AddItem screen";
+			sourceTree = "<group>";
+		};
+		763C4E032860941F00F0134E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				76385ECF282864F0006A45DF /* SheetController.swift */,
+				76385ED2282A6952006A45DF /* SheetTransitionAnimation.swift */,
+				76385ED4282A6C90006A45DF /* AddItemViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		763C4E042860942700F0134E /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				764E3264284BFBE200D1227A /* AddItemPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		763C4E052860943000F0134E /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				763C4E06286094F000F0134E /* AddItemCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
 		764FB70B27B5487C003B77B5 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
@@ -485,15 +532,19 @@
 				4BA6A759276139E6000D2ACD /* AllListsPresenter.swift in Sources */,
 				760674E127CE10BE00CC2A0E /* Stepper.swift in Sources */,
 				4BA6A75527613778000D2ACD /* Item.swift in Sources */,
+				764E3265284BFBE200D1227A /* AddItemPresenter.swift in Sources */,
 				4B8ECE4C2752E8F000396685 /* AllListsCoordinator.swift in Sources */,
 				4BA6A75727613786000D2ACD /* ShoppingList.swift in Sources */,
 				4B62FA2C276FCBC900E65683 /* EditItemViewController.swift in Sources */,
+				763C4E07286094F000F0134E /* AddItemCoordinator.swift in Sources */,
 				4B8ECE482752D68400396685 /* MainCoordinator.swift in Sources */,
 				4BCF2EA826FA3E9900CBC299 /* ListViewController.swift in Sources */,
 				4B8ECE522752EA5600396685 /* NavigationCoordinator.swift in Sources */,
 				764FB6B527B3EC3E003B77B5 /* EditItemView.swift in Sources */,
 				4BB9D3C927A5A963008574BE /* CompositionalLayout.swift in Sources */,
+				76385ED5282A6C90006A45DF /* AddItemViewController.swift in Sources */,
 				4B8ECE4E2752E8FD00396685 /* UserProfileCoordinator.swift in Sources */,
+				76385ED3282A6952006A45DF /* SheetTransitionAnimation.swift in Sources */,
 				4BB9D3CE27A5ED79008574BE /* SupplementaryViewKind.swift in Sources */,
 				765584AD27C77FA600040AB8 /* LayoutConstants.swift in Sources */,
 				4BDF0AAF2785ADE900573862 /* UITextView+Extension.swift in Sources */,
@@ -519,6 +570,7 @@
 				03671BD12821469500857860 /* ProfilePresenter.swift in Sources */,
 				7614827F27BAC38700E8842B /* AlertViewDisplayable.swift in Sources */,
 				762369E927AC676E006B1807 /* NumberFormatter+Extension.swift in Sources */,
+				76385ED0282864F0006A45DF /* SheetController.swift in Sources */,
 				4BD534CA271B4A69002A8936 /* AllListsViewController.swift in Sources */,
 				4B9BC9F3270CBACF00F73DEC /* UIColor+Extension.swift in Sources */,
 			);

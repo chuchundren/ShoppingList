@@ -14,11 +14,13 @@ protocol ListScreenOutput {
     func didSelectItem(at indexPath: IndexPath)
     func addItemWithTitle(_ title: String)
 	func didReturnToPreviousScreen()
+	func didAskToAddNewItem()
 }
 
-protocol ListModuleInput {
+protocol ListModuleInput: AnyObject {
     func updateItem(_ item: Item)
     func deleteItem()
+	func saveNewItem(_ item: Item)
 }
 
 class ListPresenter {
@@ -63,7 +65,7 @@ extension ListPresenter: ListScreenOutput {
         coordinator.didSelectItem(list.items[indexPath.item])
     }
     
-    func addNewItem(_ item: Item) {
+    func didAskToAddNewItem(_ item: Item) {
         if list.isRecentlyBoughtList {
             var alreadyBoughtItem = item
             alreadyBoughtItem.isChecked = true
@@ -93,6 +95,10 @@ extension ListPresenter: ListScreenOutput {
 	func didReturnToPreviousScreen() {
 		updateListsClosure?(list)
 	}
+
+	func didAskToAddNewItem() {
+		coordinator.didAskToAddNewItem()
+	}
 	
 }
 
@@ -113,7 +119,12 @@ extension ListPresenter: ListModuleInput {
             reloadCells()
         }
     }
-    
+
+	func saveNewItem(_ item: Item) {
+		list.items.insert(item, at: 0)
+		reloadCells()
+	}
+	
 }
 
 // MARK: - Private methods

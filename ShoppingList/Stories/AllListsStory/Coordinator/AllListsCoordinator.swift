@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol AllListsCoordinatorOutput {
+protocol ListCoordinatorOutput: AnyObject {
 	func updateList(_ list: ShoppingList)
 }
 
@@ -36,12 +36,12 @@ extension AllListsCoordinator: AllListsModuleOutput {
     
     func openShoppingList(_ list: ShoppingList) {
         let coordinator = ListCoordinator(list: list)
-		coordinator.allListsCoordinator = self
+		coordinator.output = self
         open(child: coordinator, navigationController: navigationController)
     }
 }
 
-extension AllListsCoordinator: AllListsCoordinatorOutput {
+extension AllListsCoordinator: ListCoordinatorOutput {
 	
 	func updateList(_ list: ShoppingList) {
 		presenter?.updateList(list)
