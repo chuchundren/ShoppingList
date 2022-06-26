@@ -32,24 +32,29 @@ final class ListCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Override
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        titleLabel.text = nil
-        checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
-    }
-    
     // MARK: - Public functions
     
     func configure(with viewModel: ViewModel) {
-        titleLabel.text = viewModel.title
+		switch viewModel.type {
+		case .list:
+			priceLabel.isHidden = true
+			quantityLabel.isHidden = true
+			titleLabel.text = viewModel.title
+		case let .itemToBuy(quantity, isChecked, _):
+			strikeThroughItemTitle(isChecked, text: viewModel.title)
+			quantityLabel.text = "X\(quantity)"
+			priceLabel.isHidden = true
+		case let .recentlyBought(price, quantity):
+			quantityLabel.text = "X\(quantity)"
+			priceLabel.text = price
+			titleLabel.text = viewModel.title
+		}
+
+		descriptionLabel.isHidden = viewModel.description == nil
         descriptionLabel.text = viewModel.description
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.isHidden = viewModel.description == nil
         
-        configureCell(basedOn: viewModel.type)
+		configureButton(with: viewModel.type)
     }
     
     func measureHeight(model: ViewModel, width: CGFloat) -> CGFloat {
@@ -110,39 +115,31 @@ private extension ListCell {
     }
     
     // MARK: - Configuration
-    
-    func configureCell(basedOn cellType: ViewModel.ListCellType) {
-        configureButton(with: cellType)
-        
-        switch cellType {
-        case .list:
-            priceLabel.isHidden = true
-            quantityLabel.isHidden = true
-        case let .listItem(quantity, _, _):
-            quantityLabel.text = "X\(quantity)"
-            priceLabel.isHidden = true
-        case let .recentItem(price, quantity):
-            quantityLabel.text = "X\(quantity)"
-            priceLabel.text = price
-        }
-    }
-    
+
     // MARK: Button
     
     func configureButton(with type: ViewModel.ListCellType) {
-        guard case let .listItem(_, isChecked, onCheck) = type else {
+        guard case let .itemToBuy(_, isChecked, onCheck) = type else {
             checkButton.isHidden = true
             return
         }
         
         setCheckButtonImage(for: isChecked)
         
-        checkButton.addAction(for: .touchUpInside, uniqueEvent: true) { _ in
+		checkButton.addAction(for: .touchUpInside, uniqueEvent: true) { _ in
             onCheck()
-            self.setCheckButtonImage(for: isChecked)
         }
     }
-    
+
+	func strikeThroughItemTitle(_ isStrikeThrough: Bool, text: String) {
+		if isStrikeThrough {
+			titleLabel.attributedText = text.strikeThrough()
+		} else {
+			titleLabel.attributedText = nil
+			titleLabel.text = text
+		}
+	}
+
     func setCheckButtonImage(for isChecked: Bool) {
         let image = isChecked ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle")
         checkButton.setImage(image, for: .normal)
@@ -216,10 +213,22 @@ extension ListCell.ViewModel {
     
     enum ListCellType {
         case list
-        case listItem(quantity: Int,
+        case itemToBuy(quantity: Int,
                       isChecked: Bool = false,
                       onCheck: (() -> Void))
-        case recentItem(price: String, quantity:Int)
+        case recentlyBought(price: String, quantity: Int)
     }
+
+}
+
+private extension String {
+
+	func strikeThrough() -> NSAttributedString {
+		return NSAttributedString(
+			string: self,
+			attributes: [.strikethroughStyle : NSUnderlineStyle.single.rawValue,
+						 .foregroundColor: UIColor.textGray]
+		)
+	}
 
 }

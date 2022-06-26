@@ -13,18 +13,18 @@ class EditItemView: UIView {
     
     // MARK: UI
     
-    let titleTextView = makeTextView(for: .title)
-    let descriptionTextView = makeTextView(for: .description)
+    private let titleTextView = makeTextView(for: .title)
+	private let descriptionTextView = makeTextView(for: .description)
 
-	let stepper: Stepper = {
+	private let stepper: Stepper = {
 		let stepper = Stepper()
 		stepper.minimalValue = 1
 		return stepper
 	}()
 
-    let priceLabel = makeLabel(for: .price)
-    let priceForOneTextView = makeTextView(for: .priceForOne)
-    let priceInTotalTextView = makeTextView(for: .priceInTotal)
+	private let priceLabel = makeLabel(for: .price)
+	private let priceForOneTextView = makeTextView(for: .priceForOne)
+	private let priceInTotalTextView = makeTextView(for: .priceInTotal)
     
     init() {
         super.init(frame: .zero)
@@ -82,12 +82,6 @@ private extension EditItemView {
     
     func setupView() {
         backgroundColor = .clear
-        addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(UIView.endEditing(_:))
-            )
-        )
     }
     
     func setupSubviews() {

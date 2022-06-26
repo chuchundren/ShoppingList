@@ -133,39 +133,45 @@ private extension ListPresenter {
     
     func checkItem(at index: Int) {
         list.items[index].isChecked.toggle()
-        reloadCells()
+		
+		let viewModel = mapViewModel(index: index, item: list.items[index])
+		view.reloadCell(at: IndexPath(row: index, section: 0), with: viewModel)
     }
     
     func reloadCells() {
         let models: [ListCell.ViewModel] = list.items.enumerated().map { (index, item) in
-            var type: ListCell.ViewModel.ListCellType
-            if list.isRecentlyBoughtList {
-                if let price = item.price,
-                   let formattedPrice = NumberFormatter.currencyFormatter.string(
-                    from: NSNumber(value: price)
-                   ) {
-                    type = .recentItem(price: formattedPrice, quantity: item.quantity)
-                } else {
-                    type = .recentItem(price: "", quantity: item.quantity)
-                }
-            } else {
-                type = .listItem(
-                    quantity: item.quantity,
-                    isChecked: item.isChecked,
-                    onCheck: { [weak self] in
-                        self?.checkItem(at: index)
-                    }
-                )
-            }
-            
-            return ListCell.ViewModel(
-                itemTitle: item.title,
-                description: item.description,
-                type: type
-            )
+			mapViewModel(index: index, item: item)
         }
         
         view.configureCells(with: models)
     }
+
+	func mapViewModel(index: Int, item: Item) -> ListCell.ViewModel {
+		var type: ListCell.ViewModel.ListCellType
+		if list.isRecentlyBoughtList {
+			if let price = item.price,
+			   let formattedPrice = NumberFormatter.currencyFormatter.string(
+				from: NSNumber(value: price)
+			   ) {
+				type = .recentlyBought(price: formattedPrice, quantity: item.quantity)
+			} else {
+				type = .recentlyBought(price: "", quantity: item.quantity)
+			}
+		} else {
+			type = .itemToBuy(
+				quantity: item.quantity,
+				isChecked: item.isChecked,
+				onCheck: { [weak self] in
+					self?.checkItem(at: index)
+				}
+			)
+		}
+
+		return ListCell.ViewModel(
+			itemTitle: item.title,
+			description: item.description,
+			type: type
+		)
+	}
     
 }
