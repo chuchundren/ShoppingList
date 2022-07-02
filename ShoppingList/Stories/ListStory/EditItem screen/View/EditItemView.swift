@@ -39,11 +39,11 @@ class EditItemView: UIView {
     
     func configureView(with item: Item) {
         titleTextView.text = item.title
-        descriptionTextView.text = item.description
+        descriptionTextView.text = item.itemDescription
         
         titleTextView.placeholder = nil
         
-        if let descrip = item.description, !descrip.isEmpty || item.description.isNil {
+		if let descrip = item.itemDescription, !descrip.isEmpty || item.itemDescription.isNil {
             descriptionTextView.placeholder = nil
         }
         
@@ -64,8 +64,7 @@ class EditItemView: UIView {
         
         let item = Item(
             title: title,
-            description: description,
-            label: nil,
+			description: description,
             quantity: stepper.value
         )
         

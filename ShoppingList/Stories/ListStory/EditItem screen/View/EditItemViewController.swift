@@ -182,7 +182,8 @@ private extension EditItemViewController {
 			bottomConstraint.isActive = false
 			keyboardBottomConstraint.isActive = true
 		} else {
-			keyboardBottomConstraint.isActive = false
+			#warning("Fix crashing with nil")
+			//keyboardBottomConstraint.isActive = false
 			bottomConstraint.isActive = true
 		}
 

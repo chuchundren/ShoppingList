@@ -9,12 +9,13 @@ import Foundation
 
 protocol ListScreenOutput {
     var title: String { get }
+	var isRecentlyBoughtList: Bool { get }
     
     func obtainItems()
     func didSelectItem(at indexPath: IndexPath)
-    func addItemWithTitle(_ title: String)
-	func didReturnToPreviousScreen()
+	func didAskToChangeTitle(newTitle: String)
 	func didAskToAddNewItem()
+	func didAskToDeleteList()
 }
 
 protocol ListModuleInput: AnyObject {
@@ -31,18 +32,30 @@ class ListPresenter {
     
     private unowned var view: ListScreen
     private var coordinator: ListModuleOutput
+	private var dataManager: DataManager
     
-    private var list: ShoppingList
+	private var list: ShoppingList
     private var selectedIndexPath: IndexPath?
-	
-	var updateListsClosure: ((ShoppingList) -> Void)?
     
     // MARK: - Initialization
     
-    init(view: ListScreen, coordinator: ListModuleOutput, list: ShoppingList) {
+	init(view: ListScreen, coordinator: ListModuleOutput, list: ShoppingList?, dataManager: DataManager = RealmDataManager.shared) {
         self.view = view
         self.coordinator = coordinator
-        self.list = list
+		self.dataManager = dataManager
+
+		if let list = list {
+			self.list = list
+		} else {
+			if let recentlyBought = dataManager.shoppingList(withId: Constants.recentlyBoughtListId) {
+				self.list = recentlyBought
+			} else {
+				let recentlyBought = ShoppingList(title: "Recently bought", id: Constants.recentlyBoughtListId, isRecentlyBoughtList: true)
+				self.list = recentlyBought
+				
+				dataManager.save(recentlyBought)
+			}
+		}
     }
     
 }
@@ -54,10 +67,14 @@ extension ListPresenter: ListScreenOutput {
     var title: String {
         list.title
     }
+
+	var isRecentlyBoughtList: Bool {
+		list.isRecentlyBoughtList
+	}
     
     func obtainItems() {
         // TODO: Fetch objects from the persistant store
-        reloadCells()
+        reloadView()
     }
     
     func didSelectItem(at indexPath: IndexPath) {
@@ -67,7 +84,7 @@ extension ListPresenter: ListScreenOutput {
     
     func didAskToAddNewItem(_ item: Item) {
         if list.isRecentlyBoughtList {
-            var alreadyBoughtItem = item
+            let alreadyBoughtItem = item
             alreadyBoughtItem.isChecked = true
             
             list.items.insert(alreadyBoughtItem, at: 0)
@@ -75,29 +92,19 @@ extension ListPresenter: ListScreenOutput {
             list.items.insert(item, at: 0)
         }
         
-        reloadCells()
+        reloadView()
     }
-    
-    func addItemWithTitle(_ title: String) {
-        let item = Item(
-            title: title,
-            description: nil,
-            label: nil,
-            isChecked: false,
-            quantity: 1,
-            price: nil
-        )
-        
-        list.items.insert(item, at: 0)
-        reloadCells()
-    }
-    
-	func didReturnToPreviousScreen() {
-		updateListsClosure?(list)
+
+	func didAskToChangeTitle(newTitle: String) {
+		dataManager.updateListTitle(id: list.id, newTitle: newTitle)
 	}
 
 	func didAskToAddNewItem() {
 		coordinator.didAskToAddNewItem()
+	}
+
+	func didAskToDeleteList() {
+		dataManager.deleteObject(ofType: ShoppingList.self, withId: list.id)
 	}
 	
 }
@@ -108,21 +115,21 @@ extension ListPresenter: ListModuleInput {
     
     func updateItem(_ item: Item) {
         if let selectedIndex = selectedIndexPath {
-            list.items[selectedIndex.item] = item
-            reloadCells()
+			dataManager.updateItem(withId: list.items[selectedIndex.row].id, newValue: item)
+            reloadView()
         }
     }
     
     func deleteItem() {
         if let selectedIndex = selectedIndexPath {
-            list.items.remove(at: selectedIndex.item)
-            reloadCells()
+			dataManager.deleteObject(ofType: Item.self, withId: list.items[selectedIndex.row].id)
+            reloadView()
         }
     }
 
 	func saveNewItem(_ item: Item) {
-		list.items.insert(item, at: 0)
-		reloadCells()
+		dataManager.save(item, into: list)
+		reloadView()
 	}
 	
 }
@@ -132,13 +139,13 @@ extension ListPresenter: ListModuleInput {
 private extension ListPresenter {
     
     func checkItem(at index: Int) {
-        list.items[index].isChecked.toggle()
-		
+		dataManager.toggleCheck(list.items[index])
+
 		let viewModel = mapViewModel(index: index, item: list.items[index])
 		view.reloadCell(at: IndexPath(row: index, section: 0), with: viewModel)
     }
     
-    func reloadCells() {
+    func reloadView() {
         let models: [ListCell.ViewModel] = list.items.enumerated().map { (index, item) in
 			mapViewModel(index: index, item: item)
         }
@@ -149,14 +156,7 @@ private extension ListPresenter {
 	func mapViewModel(index: Int, item: Item) -> ListCell.ViewModel {
 		var type: ListCell.ViewModel.ListCellType
 		if list.isRecentlyBoughtList {
-			if let price = item.price,
-			   let formattedPrice = NumberFormatter.currencyFormatter.string(
-				from: NSNumber(value: price)
-			   ) {
-				type = .recentlyBought(price: formattedPrice, quantity: item.quantity)
-			} else {
-				type = .recentlyBought(price: "", quantity: item.quantity)
-			}
+			type = .recentlyBought(price: "", quantity: item.quantity)
 		} else {
 			type = .itemToBuy(
 				quantity: item.quantity,
@@ -174,4 +174,11 @@ private extension ListPresenter {
 		)
 	}
     
+}
+
+private extension ListPresenter {
+
+	enum Constants {
+		static let recentlyBoughtListId =  "recentlyBoughtList"
+	}
 }

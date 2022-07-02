@@ -13,21 +13,16 @@ protocol ListModuleOutput: AnyObject {
 }
 
 class ListCoordinator: NavigationCoordinator {
-	weak var output: ListCoordinatorOutput?
-	
     private weak var presenter: ListModuleInput?
-    private var list: ShoppingList
+    private var list: ShoppingList?
     
-    init(list: ShoppingList) {
+    init(list: ShoppingList?) {
         self.list = list
     }
     
     override func makeEntryPoint() -> UIViewController {
         let view = ListViewController()
         let presenter = ListPresenter(view: view, coordinator: self, list: list)
-		presenter.updateListsClosure = { [weak self] list in
-			self?.output?.updateList(list)
-		}
 		
         self.presenter = presenter
         

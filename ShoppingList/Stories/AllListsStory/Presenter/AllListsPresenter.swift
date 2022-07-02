@@ -9,26 +9,22 @@ import Foundation
 
 protocol AllListsScreenOutput {
     func obtainLists()
-    func didAddNewList(with title: String)
+    func didAskToAddNewList(with title: String)
 	func openShoppingList(at index: Int)
 }
 
-protocol AllListsModuleInput {
-	func updateList(_ list: ShoppingList)
-}
-
-
 class AllListsPresenter {
     
-    private var shoppingLists: [ShoppingList] = []
-	private var selectedIndex: Int?
+	private var shoppingLists: [ShoppingList] = []
     
     private unowned let view: AllListsScreen
     private var coordinator: AllListsModuleOutput?
+	private var dataManager: DataManager
     
-    init(view: AllListsScreen, coordinator: AllListsModuleOutput) {
+	init(view: AllListsScreen, coordinator: AllListsModuleOutput, dataManager: DataManager = RealmDataManager.shared) {
         self.view = view
         self.coordinator = coordinator
+		self.dataManager = dataManager
     }
 	
 	private func configureView() {
@@ -44,81 +40,37 @@ class AllListsPresenter {
     
 }
 
+extension AllListsPresenter: LifecycleListener {
+
+	func viewDidAppear() {
+		obtainLists()
+	}
+	
+}
+
 // MARK: - AllListsPresenterProtocol
 
 extension AllListsPresenter: AllListsScreenOutput {
     
     func obtainLists() {
-
-		defer {
-			configureView()
-		}
-	
-		guard shoppingLists.isEmpty else {
-			return
-		}
-		
-        shoppingLists = [
-            ShoppingList(
-                title: "My shopping list",
-                items: [
-                    Item(title: "tofu"),
-                    Item(title: "apples"),
-                    Item(title: "cat food")
-                ]
-            ),
-            
-            ShoppingList(
-                title: "Birthday party",
-                items: [
-                    Item(title: "cake"),
-                    Item(title: "candles"),
-                    Item(title: "pizza souce"),
-                    Item(title: "dough")
-                ]
-            ),
-            
-            ShoppingList(
-                title: "Weekly groceries",
-                items: [
-                    Item(title: "salat"),
-                    Item(title: "mushrooms"),
-                    Item(title: "eggs"),
-                    Item(title: "pasta"),
-                    Item(title: "broccoly"),
-                    Item(title: "cheese")
-                ]
-            ),
-        ]
-        
+		shoppingLists = dataManager.shoppingLists()
+		configureView()
     }
     
-    func didAddNewList(with title: String) {
-        shoppingLists.insert(ShoppingList(title: title, items: []), at: 0)
+    func didAskToAddNewList(with title: String) {
+		let newList = ShoppingList(title: title)
+		dataManager.save(newList)
+		shoppingLists = dataManager.shoppingLists()
         
         configureView()
-		
-		if let _ = shoppingLists.first {
-			openShoppingList(at: 0)
+
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			self.coordinator?.openShoppingList(newList)
 		}
     }
 	
 	func openShoppingList(at index: Int) {
 		coordinator?.openShoppingList(shoppingLists[index])
-		selectedIndex = index
 	}
     
-}
-
-// MARK: AllListsModuleInput
-
-extension AllListsPresenter: AllListsModuleInput {
-	func updateList(_ list: ShoppingList) {
-		guard let index = selectedIndex else {
-			return
-		}
-		
-		shoppingLists[index] = list
-		configureView()
-	}
 }

@@ -17,26 +17,11 @@ class MainCoordinator: NavigationCoordinator {
     
     private(set) lazy var coordinators: [NavigationCoordinator] = [
         AllListsCoordinator(),
-        ListCoordinator(
-            list: ShoppingList(
-                title: "Recently bought",
-                items: [
-                    Item(
-                        title: "tofu",
-                        description: "Very long description message just to test how layout of the cells in the previous screen will change and whether description label will cover price label or not",
-                        price: 1.64
-                    ),
-                    Item(title: "spinach", description: "fresh only"),
-                    Item(title: "pear"),
-                    Item(title: "coffee beans", description: "Medium roast", price: 3.56),
-                    Item(title: "mushrooms"),
-                    Item(title: "pasta", price: 0.99)
-                ].filter{ $0.createdAt.distance(to: Date()) < 60 * 60 * 24 * 7 },
-                isRecentlyBoughtList: true
-            )
-        ),
+        ListCoordinator(list: nil),
         ProfileCoordinator()
     ]
+
+	// filter{ $0.createdAt.distance(to: Date()) < 60 * 60 * 24 * 7 }
     
     override func makeEntryPoint() -> UITabBarController {
         let tabBarController = makeTabBarController()

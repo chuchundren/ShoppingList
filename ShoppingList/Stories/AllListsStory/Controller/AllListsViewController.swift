@@ -11,7 +11,7 @@ protocol AllListsScreen: AnyObject {
     func configure(with viewModels: [ListCell.ViewModel])
 }
 
-class AllListsViewController: UIViewController {
+class AllListsViewController: BaseScreen {
     
     private let collectionView = UICollectionView(
         frame: .zero,
@@ -156,11 +156,11 @@ extension AllListsViewController {
         let alert = UIAlertController(title: "New List", message: "Enter your new list's title.", preferredStyle: .alert)
         alert.addTextField()
         alert.addAction(
-            UIAlertAction(title: "Add", style: .default, handler: { [weak self] _ in
+            UIAlertAction(title: "Add", style: .default) { [weak self] _ in
                 if let title = alert.textFields?.first?.text {
-                    self?.presenter?.didAddNewList(with: title)
+                    self?.presenter?.didAskToAddNewList(with: title)
                 }
-            })
+			}
         )
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))

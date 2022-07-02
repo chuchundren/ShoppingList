@@ -54,11 +54,6 @@ class ListViewController: UIViewController {
         super.viewWillAppear(animated)
         configureGradient(in: title)
     }
-	
-	override func didMove(toParent parent: UIViewController?) {
-		super.didMove(toParent: parent)
-		presenter?.didReturnToPreviousScreen()
-	}
     
 }
 
@@ -78,7 +73,10 @@ extension ListViewController: ListScreen {
     
     func reloadCell(at indexPath: IndexPath, with item: ListCell.ViewModel) {
         items[indexPath.item] = item
-        collectionView.reloadItems(at: [indexPath])
+		UIView.performWithoutAnimation {
+			collectionView.reloadItems(at: [indexPath])
+		}
+
     }
     
 }
@@ -106,10 +104,11 @@ private extension ListViewController {
     }
     
     func setupNavigationBar() {
-        navigationItem.title = presenter?.title
-        
         let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonTapped))
-        navigationItem.rightBarButtonItem = plusButton
+		let actionButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(actionButtonTapped))
+
+		navigationItem.title = presenter?.title
+		navigationItem.rightBarButtonItems = [plusButton, actionButton]
     }
     
     // MARK: Layout
@@ -125,17 +124,17 @@ private extension ListViewController {
         ])
     }
     
-    // MARK: 
-    
-    func presentNewItemAlert() {
-        let alert = UIAlertController(title: "New item", message: "Enter item's title. \nYou will be able to edit it later", preferredStyle: .alert)
+    func changeTitleAlert() {
+        let alert = UIAlertController(title: "Enter new title", message: nil, preferredStyle: .alert)
         alert.addTextField()
         alert.addAction(
-            UIAlertAction(title: "Add", style: .default, handler: { [weak self] _ in
+            UIAlertAction(title: "Ok", style: .default) { [weak self] _ in
                 if let title = alert.textFields?.first?.text {
-                    self?.presenter?.addItemWithTitle(title)
+					self?.presenter?.didAskToChangeTitle(newTitle: title)
+					self?.title = title
+					self?.configureGradient(in: title)
                 }
-            })
+            }
         )
         
 		alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -155,6 +154,32 @@ private extension ListViewController {
     @objc func addItemButtonTapped() {
         showSheetController()
     }
+
+	@objc func actionButtonTapped() {
+		let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+		let delete = UIAlertAction(title: "Delete list", style: .destructive) { [weak self] _ in
+			self?.presenter?.didAskToDeleteList()
+			self?.navigationController?.popViewController(animated: true)
+		}
+
+		let edit = UIAlertAction(title: "Change list name", style: .default) { [weak self] _ in
+			self?.changeTitleAlert()
+		}
+
+		let activity = UIAlertAction(title: "Share", style: .default) { [weak self] _ in
+			let activityVC = UIActivityViewController(activityItems: [], applicationActivities: nil)
+			self?.present(activityVC, animated: true)
+		}
+
+		ac.addAction(activity)
+
+		if let presenter = presenter, !presenter.isRecentlyBoughtList {
+			ac.addAction(edit)
+			ac.addAction(delete)
+		}
+
+		present(ac, animated: true)
+	}
     
 }
 
