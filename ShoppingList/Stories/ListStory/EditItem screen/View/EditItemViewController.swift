@@ -21,7 +21,7 @@ class EditItemViewController: UIViewController {
     private let deleteButton = makeButton()
 
 	private var bottomConstraint: NSLayoutConstraint!
-	private var keyboardBottomConstraint: NSLayoutConstraint!
+	private var keyboardBottomConstraint: NSLayoutConstraint?
 
     
     var presenter: EditItemScreenOutput?
@@ -104,22 +104,6 @@ private extension EditItemViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDoneButton))
     }
     
-    // MARK: - Selectors
-    
-    @objc func didTapDoneButton() {
-        if let item = editView.validateNewItem() {
-            presenter?.didFinishEditing(item: item)
-        }
-    }
-    
-    @objc func didTapDeleteButton() {
-        presenter?.didTapDeleteButton()
-    }
-
-	@objc func endEditing() {
-		resignFirstResponder()
-	}
-    
     // MARK: Layout
     
     func setupLayout() {
@@ -140,35 +124,7 @@ private extension EditItemViewController {
         ])
     }
 
-	// MARK: @objc
-
-	@objc func keyboardWillShow(with notification: Notification) {
-		guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
-			return
-		}
-
-		let keyboardHeight = keyboardValue.cgRectValue.height
-
-		keyboardBottomConstraint = deleteButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -keyboardHeight + Constants.bottomConstraintConstant)
-
-		bottomConstraint.isActive = false
-		keyboardBottomConstraint.isActive = true
-
-		UIView.animate(withDuration: 0.3) {
-			self.view.layoutIfNeeded()
-		}
-	}
-
-	@objc func keyboardWillHide(with notification: Notification) {
-		keyboardBottomConstraint.isActive = false
-		bottomConstraint.isActive = true
-
-		UIView.animate(withDuration: 0.3) {
-			self.view.layoutIfNeeded()
-
-		}
-
-	}
+	// MARK: @objc methods
 
 	@objc func adjustForKeyboard(notification: Notification) {
 		guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
@@ -180,16 +136,30 @@ private extension EditItemViewController {
 			keyboardBottomConstraint = deleteButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -keyboardHeight + Constants.bottomConstraintConstant)
 
 			bottomConstraint.isActive = false
-			keyboardBottomConstraint.isActive = true
-		} else {
-			#warning("Fix crashing with nil")
-			//keyboardBottomConstraint.isActive = false
+			keyboardBottomConstraint?.isActive = true
+		} else if notification.name == UIResponder.keyboardWillHideNotification {
+			keyboardBottomConstraint?.isActive = false
 			bottomConstraint.isActive = true
 		}
 
 		UIView.animate(withDuration: 0.3) {
 			self.view.layoutIfNeeded()
 		}
+	}
+
+
+	@objc func didTapDoneButton() {
+		if let item = editView.validateNewItem() {
+			presenter?.didFinishEditing(item: item)
+		}
+	}
+
+	@objc func didTapDeleteButton() {
+		presenter?.didTapDeleteButton()
+	}
+
+	@objc func endEditing() {
+		resignFirstResponder()
 	}
 
 }
