@@ -157,7 +157,7 @@ extension AllListsViewController {
         alert.addTextField()
         alert.addAction(
             UIAlertAction(title: "Add", style: .default) { [weak self] _ in
-                if let title = alert.textFields?.first?.text {
+                if let title = alert.textFields?.first?.text, !title.isEmpty {
                     self?.presenter?.didAskToAddNewList(with: title)
                 }
 			}

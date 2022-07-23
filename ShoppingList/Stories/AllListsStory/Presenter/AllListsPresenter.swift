@@ -29,10 +29,7 @@ class AllListsPresenter {
 	
 	private func configureView() {
 		 let viewModels = shoppingLists.map { list in
-			ListCell.ViewModel(
-				listTitle: list.title,
-				description: " \(list.items.count) items"
-			)
+			ListCell.ViewModel(list: list)
 		}
 		
 		view.configure(with: viewModels)

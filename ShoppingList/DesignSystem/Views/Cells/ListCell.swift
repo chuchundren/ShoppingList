@@ -17,7 +17,6 @@ final class ListCell: UICollectionViewCell {
     private let titleLabel = makeLabel(for: .title)
     private let descriptionLabel = makeLabel(for: .description)
     private let quantityLabel = makeLabel(for: .quantity)
-    private let priceLabel = makeLabel(for: .price)
     
     // MARK: - Initilizers
     
@@ -34,27 +33,11 @@ final class ListCell: UICollectionViewCell {
     
     // MARK: - Public functions
     
-    func configure(with viewModel: ViewModel) {
-		switch viewModel.type {
-		case .list:
-			priceLabel.isHidden = true
-			quantityLabel.isHidden = true
-			titleLabel.text = viewModel.title
-		case let .itemToBuy(quantity, isChecked, _):
-			strikeThroughItemTitle(isChecked, text: viewModel.title)
-			quantityLabel.text = "X\(quantity)"
-			priceLabel.isHidden = true
-		case let .recentlyBought(price, quantity):
-			quantityLabel.text = "X\(quantity)"
-			priceLabel.text = price
-			titleLabel.text = viewModel.title
-		}
-
-		descriptionLabel.isHidden = viewModel.description == nil
-        descriptionLabel.text = viewModel.description
-        descriptionLabel.numberOfLines = 0
-        
-		configureButton(with: viewModel.type)
+    func configure(with model: ViewModel) {
+        titleLabel.attributedText = model.title
+        descriptionLabel.text = model.subtitle
+        quantityLabel.text = model.quantity
+        configureButton(checked: model.isChecked, onCheck: model.check)
     }
     
     func measureHeight(model: ViewModel, width: CGFloat) -> CGFloat {
@@ -95,7 +78,7 @@ private extension ListCell {
     }
     
     func makeMainStack() -> UIStackView {
-        let upperStack = UIStackView(arrangedSubviews: [titleLabel, quantityLabel, UIView(), priceLabel])
+        let upperStack = UIStackView(arrangedSubviews: [titleLabel, quantityLabel, UIView()])
         upperStack.axis = .horizontal
         upperStack.distribution = .fill
         upperStack.alignment = .center
@@ -118,27 +101,17 @@ private extension ListCell {
 
     // MARK: Button
     
-    func configureButton(with type: ViewModel.ListCellType) {
-        guard case let .itemToBuy(_, isChecked, onCheck) = type else {
+    func configureButton(checked: Bool?, onCheck: (() -> Void)?) {
+        guard let isChecked = checked, let check = onCheck else {
             checkButton.isHidden = true
             return
         }
         
         setCheckButtonImage(for: isChecked)
-        
-		checkButton.addAction(for: .touchUpInside, uniqueEvent: true) { _ in
-            onCheck()
+        checkButton.addAction(for: .touchUpInside, uniqueEvent: true) { _ in
+            check()
         }
     }
-
-	func strikeThroughItemTitle(_ isStrikeThrough: Bool, text: String) {
-		if isStrikeThrough {
-			titleLabel.attributedText = text.strikeThrough()
-		} else {
-			titleLabel.attributedText = nil
-			titleLabel.text = text
-		}
-	}
 
     func setCheckButtonImage(for isChecked: Bool) {
         let image = isChecked ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle")
@@ -159,15 +132,14 @@ private extension ListCell {
         case .title:
             label.font = .systemFont(ofSize: 18)
             label.textColor = .textMain
+            label.numberOfLines = 0
         case .description:
             label.font = .systemFont(ofSize: 16)
             label.textColor = .textGray
+            label.numberOfLines = 0
         case .quantity:
             label.font = .systemFont(ofSize: 17)
             label.textColor = .textGray
-        case .price:
-            label.font = .systemFont(ofSize: 20)
-            label.textColor = .textMain
         }
         
         return label
@@ -178,7 +150,7 @@ private extension ListCell {
 extension ListCell {
     
     enum LabelPurpose {
-        case title, description, quantity, price
+        case title, description, quantity
     }
     
 }
@@ -188,47 +160,46 @@ extension ListCell {
 extension ListCell {
     
     struct ViewModel {
+        let title: NSAttributedString
+        let subtitle: String?
         
-        var title: String
-        var description: String?
-        var type: ListCellType
+        let check: (() -> Void)?
+        let quantity: String?
+        let isChecked: Bool?
         
-        init(itemTitle: String, description: String?, type: ListCellType) {
-            self.title = itemTitle
-            self.description = description
-            self.type = type
+        init(list: ShoppingList) {
+            title = list.title.attributed()
+            
+            let shouldBeSingular = list.items.count % 10 == 1
+            subtitle = "\(list.items.count) \(shouldBeSingular ? "item" : "items")"
+            check = nil
+            quantity = nil
+            isChecked = nil
         }
         
-        init(listTitle: String, description: String?) {
-            self.title = listTitle
-            self.description = description
-            self.type = .list
+        init(item: Item, check: (() -> Void)?) {
+            title = item.isChecked ? item.title.strikeThrough() : item.title.attributed()
+            subtitle = item.itemDescription
+            quantity = "X\(item.quantity)"
+            isChecked = item.isChecked
+            self.check = check
         }
-        
     }
     
-}
-
-extension ListCell.ViewModel {
-    
-    enum ListCellType {
-        case list
-        case itemToBuy(quantity: Int,
-                      isChecked: Bool = false,
-                      onCheck: (() -> Void))
-        case recentlyBought(price: String, quantity: Int)
-    }
-
 }
 
 private extension String {
 
 	func strikeThrough() -> NSAttributedString {
-		return NSAttributedString(
+        NSAttributedString(
 			string: self,
 			attributes: [.strikethroughStyle : NSUnderlineStyle.single.rawValue,
 						 .foregroundColor: UIColor.textGray]
 		)
 	}
+    
+    func attributed() -> NSAttributedString {
+        NSAttributedString(string: self)
+    }
 
 }

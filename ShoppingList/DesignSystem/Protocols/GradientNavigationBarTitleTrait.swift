@@ -16,7 +16,7 @@ protocol GradientNavigationBarTitleTrait: UIViewController, GradientNavigationBa
 extension GradientNavigationBarTitleTrait {
     
     func configureGradient(in title: String?) {
-        if let navController = navigationController, let title = navigationItem.title {
+        if let navController = navigationController, let title = navigationItem.title, !title.isEmpty {
             let size = title.size(withAttributes: [.font : UIFont.systemFont(ofSize: 40.0, weight: .bold)])
             let bounds = CGRect(
                 origin: navController.navigationBar.bounds.origin,

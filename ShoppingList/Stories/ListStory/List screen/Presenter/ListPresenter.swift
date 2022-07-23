@@ -153,25 +153,14 @@ private extension ListPresenter {
         view.configureCells(with: models)
     }
 
-	func mapViewModel(index: Int, item: Item) -> ListCell.ViewModel {
-		var type: ListCell.ViewModel.ListCellType
-		if list.isRecentlyBoughtList {
-			type = .recentlyBought(price: "", quantity: item.quantity)
-		} else {
-			type = .itemToBuy(
-				quantity: item.quantity,
-				isChecked: item.isChecked,
-				onCheck: { [weak self] in
-					self?.checkItem(at: index)
-				}
-			)
-		}
-
-		return ListCell.ViewModel(
-			itemTitle: item.title,
-			description: item.description,
-			type: type
-		)
+    func mapViewModel(index: Int, item: Item) -> ListCell.ViewModel {
+        if isRecentlyBoughtList {
+            return ListCell.ViewModel(item: item, check: nil)
+        } else {
+            return ListCell.ViewModel(item: item) { [weak self] in
+                self?.checkItem(at: index)
+            }
+        }
 	}
     
 }
