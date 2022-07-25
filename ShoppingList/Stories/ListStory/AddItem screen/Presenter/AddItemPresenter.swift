@@ -8,7 +8,7 @@
 import UIKit
 
 protocol AddItemScreenOutput {
-	func didAskToSaveNewItem(_ item: Item)
+    func didAskToSaveNewItem(with title: String, quantity: Int)
 }
 
 class AddItemPresenter {
@@ -24,8 +24,8 @@ class AddItemPresenter {
 
 extension AddItemPresenter: AddItemScreenOutput {
 
-	func didAskToSaveNewItem(_ item: Item) {
-		coordinator.didAskToSaveNewItem(item)
+	func didAskToSaveNewItem(with title: String, quantity: Int) {
+		coordinator.didAskToSaveNewItem(title: title, quantity: quantity)
 	}
 
 }

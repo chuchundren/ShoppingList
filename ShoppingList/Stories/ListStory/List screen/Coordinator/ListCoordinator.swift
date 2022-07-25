@@ -8,28 +8,54 @@
 import UIKit
 
 protocol ListModuleOutput: AnyObject {
-    func didSelectItem(_ item: Item)
+    func didSelectItem(at index: Int)
+    func didAskToSaveNewItem(_ item: Item)
 	func didAskToAddNewItem()
+    func didAskToChangeTitle(to newTitle: String)
+    func didAskToDeleteList()
+    func didAskToUpdateItem(id: String, newValue: Item)
+    func didAskToDeleteItem(id: String)
 }
 
 class ListCoordinator: NavigationCoordinator {
     private weak var presenter: ListModuleInput?
-    private var list: ShoppingList?
+    private var list: ShoppingList
+    private let dataManager: DataManager
     
-    init(list: ShoppingList?) {
+    init(list: ShoppingList, dataManager: DataManager = RealmDataManager.shared) {
         self.list = list
+        self.dataManager = dataManager
     }
     
     override func makeEntryPoint() -> UIViewController {
         let view = ListViewController()
-        let presenter = ListPresenter(view: view, coordinator: self, list: list)
-		
+        
+        let service = ItemsDataServiceAdapter(
+            service: dataManager,
+            shoppingListId: list.id,
+            check: list.isRecentlyBoughtList ? nil : checkItem
+        )
+        
+        let presenter = ListPresenter(
+            view: view,
+            coordinator: self,
+            service: service
+        )
+        
         self.presenter = presenter
         
         view.presenter = presenter
+        view.addLifecycleListener(presenter)
+        view.configureListNavBar(forRecent: list.isRecentlyBoughtList)
         view.tabBarItem.configure(tab: .list)
-        
+        view.title = list.title
+       
         return view
+    }
+    
+    func checkItem(id: String) {
+        dataManager.toggleCheck(id: id)
+        presenter?.checkItem(id: id)
     }
     
 }
@@ -38,9 +64,13 @@ class ListCoordinator: NavigationCoordinator {
     
 extension ListCoordinator: ListModuleOutput {
     
-    func didSelectItem(_ item: Item) {
-        let addNewItemCoordinator = EditItemCoordinator(item: item, output: self)
+    func didSelectItem(at index: Int) {
+        let addNewItemCoordinator = EditItemCoordinator(item: list.items[index], output: self)
         open(child: addNewItemCoordinator)
+    }
+    
+    func didAskToSaveNewItem(_ item: Item) {
+        dataManager.save(item, into: list)
     }
 
 	func didAskToAddNewItem() {
@@ -49,6 +79,22 @@ extension ListCoordinator: ListModuleOutput {
 
 		navigationController.present(view, animated: true)
 	}
+    
+    func didAskToChangeTitle(to newTitle: String) {
+        dataManager.updateListTitle(id: list.id, newTitle: newTitle)
+    }
+    
+    func didAskToDeleteList() {
+        dataManager.deleteObject(ofType: ShoppingList.self, withId: list.id)
+    }
+    
+    func didAskToUpdateItem(id: String, newValue: Item) {
+        dataManager.updateItem(withId: id, newValue: newValue)
+    }
+    
+    func didAskToDeleteItem(id: String) {
+        dataManager.deleteObject(ofType: Item.self, withId: id)
+    }
     
 }
 
@@ -70,8 +116,11 @@ extension ListCoordinator: EditItemCoordinatorOutput {
 
 extension ListCoordinator: AddItemCoordinatorOutput {
 
-	func didAskToSaveItem(_ item: Item) {
-		presenter?.saveNewItem(item)
+    func didAskToSaveItem(with title: String, quantity: Int) {
+        let item = Item(title: title, isChecked: list.isRecentlyBoughtList, quantity: quantity)
+        dataManager.save(item, into: list)
+        
+		presenter?.reload()
 	}
 
 }

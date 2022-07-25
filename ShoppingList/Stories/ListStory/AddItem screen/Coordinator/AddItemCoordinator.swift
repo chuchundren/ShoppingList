@@ -9,11 +9,11 @@ import UIKit
 
 
 protocol AddItemModuleOutput {
-	func didAskToSaveNewItem(_ item: Item)
+	func didAskToSaveNewItem(title: String, quantity: Int)
 }
 
 protocol AddItemCoordinatorOutput: AnyObject {
-	func didAskToSaveItem(_ item: Item)
+    func didAskToSaveItem(with title: String, quantity: Int)
 }
 
 final class AddItemCoordinator: NavigationCoordinator {
@@ -38,8 +38,8 @@ final class AddItemCoordinator: NavigationCoordinator {
 
 extension AddItemCoordinator: AddItemModuleOutput {
 
-	func didAskToSaveNewItem(_ item: Item) {
-		output?.didAskToSaveItem(item)
+    func didAskToSaveNewItem(title: String, quantity: Int) {
+		output?.didAskToSaveItem(with: title, quantity: quantity)
 	}
 
 }

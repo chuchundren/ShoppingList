@@ -15,7 +15,7 @@ protocol ListScreen: AnyObject {
     
 }
 
-class ListViewController: UIViewController {
+class ListViewController: BaseScreen {
     
     // MARK: - Private
     
@@ -44,15 +44,27 @@ class ListViewController: UIViewController {
         view.backgroundColor = .bg
         
         setupCollectionView()
-        setupNavigationBar()
         setupLayout()
-        
-        presenter?.obtainItems()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureGradient(in: title)
+    }
+    
+    func configureListNavBar(forRecent: Bool) {
+        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonTapped))
+        let actionButton = forRecent ? UIBarButtonItem(
+            barButtonSystemItem: .action,
+            target: self,
+            action: #selector(recentListActionButtonTapped)
+        ) : UIBarButtonItem(
+            barButtonSystemItem: .action,
+            target: self,
+            action: #selector(actionButtonTapped)
+        )
+        
+        navigationItem.rightBarButtonItems = [plusButton, actionButton]
     }
     
 }
@@ -103,14 +115,6 @@ private extension ListViewController {
         }
     }
     
-    func setupNavigationBar() {
-        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonTapped))
-		let actionButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(actionButtonTapped))
-
-		navigationItem.title = presenter?.title
-		navigationItem.rightBarButtonItems = [plusButton, actionButton]
-    }
-    
     // MARK: Layout
     
     func setupLayout() {
@@ -156,30 +160,44 @@ private extension ListViewController {
     }
 
 	@objc func actionButtonTapped() {
-		let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-		let delete = UIAlertAction(title: "Delete list", style: .destructive) { [weak self] _ in
-			self?.presenter?.didAskToDeleteList()
-			self?.navigationController?.popViewController(animated: true)
-		}
-
-		let edit = UIAlertAction(title: "Change list name", style: .default) { [weak self] _ in
-			self?.changeTitleAlert()
-		}
-
-		let activity = UIAlertAction(title: "Share", style: .default) { [weak self] _ in
-			let activityVC = UIActivityViewController(activityItems: [], applicationActivities: nil)
-			self?.present(activityVC, animated: true)
-		}
-
-		ac.addAction(activity)
-
-		if let presenter = presenter, !presenter.isRecentlyBoughtList {
-			ac.addAction(edit)
-			ac.addAction(delete)
-		}
-
-		present(ac, animated: true)
+        presentActionSheet(actions: [activityAction(), editAction(), deleteAction(), cancelAction()])
 	}
+    
+    @objc func recentListActionButtonTapped() {
+        presentActionSheet(actions: [activityAction(), cancelAction()])
+    }
+    
+    func presentActionSheet(actions: [UIAlertAction]) {
+        let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in actions {
+            ac.addAction(action)
+        }
+        present(ac, animated: true)
+    }
+    
+    func deleteAction() -> UIAlertAction {
+        UIAlertAction(title: "Delete list", style: .destructive) { [weak self] _ in
+            self?.presenter?.didAskToDeleteList()
+            self?.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func editAction() -> UIAlertAction {
+        UIAlertAction(title: "Change list name", style: .default) { [weak self] _ in
+            self?.changeTitleAlert()
+        }
+    }
+    
+    func activityAction() -> UIAlertAction {
+        UIAlertAction(title: "Share", style: .default) { [weak self] _ in
+            let activityVC = UIActivityViewController(activityItems: [], applicationActivities: nil)
+            self?.present(activityVC, animated: true)
+        }
+    }
+    
+    func cancelAction() -> UIAlertAction {
+        UIAlertAction(title: "Cancel", style: .cancel)
+    }
     
 }
 

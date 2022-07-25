@@ -22,4 +22,5 @@ protocol DataManager {
 	func updateListTitle(id: String, newTitle: String)
 
 	func toggleCheck(_ item: Item)
+    func toggleCheck(id: String) 
 }

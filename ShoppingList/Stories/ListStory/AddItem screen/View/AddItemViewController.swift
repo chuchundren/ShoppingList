@@ -18,7 +18,7 @@ class AddItemViewController: UIViewController {
 	private let textField: UITextField = {
 		let textField = UITextField()
 		textField.translatesAutoresizingMaskIntoConstraints = false
-		textField.addTarget(self, action: #selector(addNewItem), for: .primaryActionTriggered)
+        textField.placeholder = "Enter your item's title"
 		return textField
 	}()
 
@@ -35,7 +35,6 @@ class AddItemViewController: UIViewController {
 		button.setTitle("Cancel", for: .normal)
 		button.setTitleColor(.systemBlue, for: .normal)
 		button.translatesAutoresizingMaskIntoConstraints = false
-		button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
 		return button
 	}()
 
@@ -68,8 +67,9 @@ class AddItemViewController: UIViewController {
 			cancelButton.trailing(equalTo: stepper.trailingAnchor),
 			cancelButton.top(equalTo: stepper.bottomAnchor, constant: 8)
 		])
-
-		textField.placeholder = "Enter yout item's title"
+        
+        textField.addTarget(self, action: #selector(addNewItem), for: .primaryActionTriggered)
+        cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
     }
 
 	override func viewDidAppear(_ animated: Bool) {
@@ -92,9 +92,8 @@ class AddItemViewController: UIViewController {
 		guard let title = textField.text, !title.isEmpty else {
 			return
 		}
-
-		let item = Item(title: title)
-		presenter?.didAskToSaveNewItem(item)
+        
+        presenter?.didAskToSaveNewItem(with: title, quantity: stepper.value)
 	}
 
 }

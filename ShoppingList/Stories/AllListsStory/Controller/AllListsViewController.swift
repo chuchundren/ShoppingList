@@ -36,12 +36,6 @@ class AllListsViewController: BaseScreen {
         configureGradient(in: title)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        presenter?.obtainLists()
-    }
-    
 }
 
 

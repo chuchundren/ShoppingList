@@ -8,10 +8,6 @@
 import Foundation
 
 protocol ListScreenOutput {
-    var title: String { get }
-	var isRecentlyBoughtList: Bool { get }
-    
-    func obtainItems()
     func didSelectItem(at indexPath: IndexPath)
 	func didAskToChangeTitle(newTitle: String)
 	func didAskToAddNewItem()
@@ -21,7 +17,8 @@ protocol ListScreenOutput {
 protocol ListModuleInput: AnyObject {
     func updateItem(_ item: Item)
     func deleteItem()
-	func saveNewItem(_ item: Item)
+    func reload()
+    func checkItem(id: String)
 }
 
 class ListPresenter {
@@ -32,71 +29,43 @@ class ListPresenter {
     
     private unowned var view: ListScreen
     private var coordinator: ListModuleOutput
-	private var dataManager: DataManager
-    
-	private var list: ShoppingList
+    private var service: DataServiceAdapter
+
     private var selectedIndexPath: IndexPath?
+    private var items: [ListCell.ViewModel] = []
     
     // MARK: - Initialization
     
-	init(view: ListScreen, coordinator: ListModuleOutput, list: ShoppingList?, dataManager: DataManager = RealmDataManager.shared) {
+    init(view: ListScreen, coordinator: ListModuleOutput, service: DataServiceAdapter) {
         self.view = view
         self.coordinator = coordinator
-		self.dataManager = dataManager
-
-		if let list = list {
-			self.list = list
-		} else {
-			if let recentlyBought = dataManager.shoppingList(withId: Constants.recentlyBoughtListId) {
-				self.list = recentlyBought
-			} else {
-				let recentlyBought = ShoppingList(title: "Recently bought", id: Constants.recentlyBoughtListId, isRecentlyBoughtList: true)
-				self.list = recentlyBought
-				
-				dataManager.save(recentlyBought)
-			}
-		}
+        self.service = service
     }
+}
+
+extension ListPresenter: LifecycleListener {
     
+    func viewDidAppear() {
+        reloadView()
+    }
 }
 
 // MARK: - ListPresenterProtocol
 
 extension ListPresenter: ListScreenOutput {
     
-    var title: String {
-        list.title
-    }
-
-	var isRecentlyBoughtList: Bool {
-		list.isRecentlyBoughtList
-	}
-    
-    func obtainItems() {
-        // TODO: Fetch objects from the persistant store
-        reloadView()
-    }
-    
     func didSelectItem(at indexPath: IndexPath) {
         selectedIndexPath = indexPath
-        coordinator.didSelectItem(list.items[indexPath.item])
+        coordinator.didSelectItem(at: indexPath.item)
     }
     
     func didAskToAddNewItem(_ item: Item) {
-        if list.isRecentlyBoughtList {
-            let alreadyBoughtItem = item
-            alreadyBoughtItem.isChecked = true
-            
-            list.items.insert(alreadyBoughtItem, at: 0)
-        } else {
-            list.items.insert(item, at: 0)
-        }
-        
+        coordinator.didAskToSaveNewItem(item)
         reloadView()
     }
 
 	func didAskToChangeTitle(newTitle: String) {
-		dataManager.updateListTitle(id: list.id, newTitle: newTitle)
+        coordinator.didAskToChangeTitle(to: newTitle)
 	}
 
 	func didAskToAddNewItem() {
@@ -104,7 +73,7 @@ extension ListPresenter: ListScreenOutput {
 	}
 
 	func didAskToDeleteList() {
-		dataManager.deleteObject(ofType: ShoppingList.self, withId: list.id)
+        coordinator.didAskToDeleteList()
 	}
 	
 }
@@ -115,22 +84,31 @@ extension ListPresenter: ListModuleInput {
     
     func updateItem(_ item: Item) {
         if let selectedIndex = selectedIndexPath {
-			dataManager.updateItem(withId: list.items[selectedIndex.row].id, newValue: item)
-            reloadView()
+            coordinator.didAskToUpdateItem(id: items[selectedIndex.row].id, newValue: item)
         }
     }
     
     func deleteItem() {
         if let selectedIndex = selectedIndexPath {
-			dataManager.deleteObject(ofType: Item.self, withId: list.items[selectedIndex.row].id)
-            reloadView()
+            coordinator.didAskToDeleteItem(id: items[selectedIndex.row].id)
         }
     }
-
-	func saveNewItem(_ item: Item) {
-		dataManager.save(item, into: list)
-		reloadView()
-	}
+    
+    func reload() {
+        reloadView()
+    }
+    
+    func checkItem(id: String) {
+        let index = items.firstIndex { item in
+            item.id == id
+        }
+        
+        items = service.getViewModels()
+        
+        if let index = index {
+            view.reloadCell(at: IndexPath(row: index, section: 0), with: items[index])
+        }
+    }
 	
 }
 
@@ -138,36 +116,9 @@ extension ListPresenter: ListModuleInput {
 
 private extension ListPresenter {
     
-    func checkItem(at index: Int) {
-		dataManager.toggleCheck(list.items[index])
-
-		let viewModel = mapViewModel(index: index, item: list.items[index])
-		view.reloadCell(at: IndexPath(row: index, section: 0), with: viewModel)
-    }
-    
     func reloadView() {
-        let models: [ListCell.ViewModel] = list.items.enumerated().map { (index, item) in
-			mapViewModel(index: index, item: item)
-        }
-        
-        view.configureCells(with: models)
+        items = service.getViewModels()
+        view.configureCells(with: items)
     }
-
-    func mapViewModel(index: Int, item: Item) -> ListCell.ViewModel {
-        if isRecentlyBoughtList {
-            return ListCell.ViewModel(item: item, check: nil)
-        } else {
-            return ListCell.ViewModel(item: item) { [weak self] in
-                self?.checkItem(at: index)
-            }
-        }
-	}
     
-}
-
-private extension ListPresenter {
-
-	enum Constants {
-		static let recentlyBoughtListId =  "recentlyBoughtList"
-	}
 }

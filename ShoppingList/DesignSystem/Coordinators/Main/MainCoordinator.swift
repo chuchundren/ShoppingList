@@ -17,7 +17,7 @@ class MainCoordinator: NavigationCoordinator {
     
     private(set) lazy var coordinators: [NavigationCoordinator] = [
         AllListsCoordinator(),
-        ListCoordinator(list: nil),
+        MainCoordinator.makeRecentListCoordinator(),
         ProfileCoordinator()
     ]
 
@@ -49,6 +49,22 @@ private extension MainCoordinator {
         tabBarController.tabBar.backgroundColor = .white
         
         return tabBarController
+    }
+    
+    static func makeRecentListCoordinator() -> NavigationCoordinator {
+        let dataManager = RealmDataManager.shared
+        var list: ShoppingList
+        
+        if let recentlyBought = dataManager.shoppingList(withId: Constants.recentlyBoughtListId) {
+            list = recentlyBought
+        } else {
+            let recentlyBought = ShoppingList(title: "Recently bought", id: Constants.recentlyBoughtListId, isRecentlyBoughtList: true)
+            list = recentlyBought
+            
+            dataManager.save(recentlyBought)
+        }
+        
+        return ListCoordinator(list: list)
     }
     
 }
@@ -87,6 +103,16 @@ extension UITabBarItem {
                 .applyingSymbolConfiguration(imageConfig)?
                 .withBaselineOffset(fromBottom: baselineOffset)
         }
+    }
+    
+}
+
+// MARK: - Constants
+
+private extension MainCoordinator {
+    
+    enum Constants {
+        static let recentlyBoughtListId =  "recentlyBoughtList"
     }
     
 }

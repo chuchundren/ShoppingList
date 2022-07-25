@@ -106,6 +106,17 @@ class RealmDataManager: DataManager {
 			realm?.add(item, update: .modified)
 		}
 	}
+    
+    func toggleCheck(id: String) {
+        guard let item = realm?.object(ofType: Item.self, forPrimaryKey: id) else {
+            return
+        }
+        
+        write {
+            item.isChecked.toggle()
+            realm?.add(item, update: .modified)
+        }
+    }
 
 	private func write(writeClosure: () -> Void) {
 		do {

@@ -37,7 +37,7 @@ final class ListCell: UICollectionViewCell {
         titleLabel.attributedText = model.title
         descriptionLabel.text = model.subtitle
         quantityLabel.text = model.quantity
-        configureButton(checked: model.isChecked, onCheck: model.check)
+        configureButton(id: model.id, checked: model.isChecked, onCheck: model.check)
     }
     
     func measureHeight(model: ViewModel, width: CGFloat) -> CGFloat {
@@ -101,7 +101,7 @@ private extension ListCell {
 
     // MARK: Button
     
-    func configureButton(checked: Bool?, onCheck: (() -> Void)?) {
+    func configureButton(id: String, checked: Bool?, onCheck: ((String) -> Void)?) {
         guard let isChecked = checked, let check = onCheck else {
             checkButton.isHidden = true
             return
@@ -109,7 +109,7 @@ private extension ListCell {
         
         setCheckButtonImage(for: isChecked)
         checkButton.addAction(for: .touchUpInside, uniqueEvent: true) { _ in
-            check()
+            check(id)
         }
     }
 
@@ -162,24 +162,27 @@ extension ListCell {
     struct ViewModel {
         let title: NSAttributedString
         let subtitle: String?
+        let id: String
         
-        let check: (() -> Void)?
+        let check: ((String) -> Void)?
         let quantity: String?
-        let isChecked: Bool?
+        var isChecked: Bool?
         
         init(list: ShoppingList) {
             title = list.title.attributed()
             
             let shouldBeSingular = list.items.count % 10 == 1
             subtitle = "\(list.items.count) \(shouldBeSingular ? "item" : "items")"
+            id = list.id
             check = nil
             quantity = nil
             isChecked = nil
         }
         
-        init(item: Item, check: (() -> Void)?) {
+        init(item: Item, check: ((String) -> Void)?) {
             title = item.isChecked ? item.title.strikeThrough() : item.title.attributed()
             subtitle = item.itemDescription
+            id = item.id
             quantity = "X\(item.quantity)"
             isChecked = item.isChecked
             self.check = check
