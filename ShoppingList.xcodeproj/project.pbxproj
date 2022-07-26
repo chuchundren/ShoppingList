@@ -37,7 +37,6 @@
 		4BCF2EAD26FA3EA100CBC299 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF2EAC26FA3EA100CBC299 /* Assets.xcassets */; };
 		4BCF2EB026FA3EA100CBC299 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF2EAE26FA3EA100CBC299 /* LaunchScreen.storyboard */; };
 		4BCF2EBC26FA409000CBC299 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF2EBB26FA409000CBC299 /* UIView+Extension.swift */; };
-		4BD534CA271B4A69002A8936 /* AllListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD534C9271B4A69002A8936 /* AllListsViewController.swift */; };
 		4BDF0AAD277E66E100573862 /* EditItemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDF0AAC277E66E100573862 /* EditItemPresenter.swift */; };
 		4BDF0AAF2785ADE900573862 /* UITextView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDF0AAE2785ADE900573862 /* UITextView+Extension.swift */; };
 		760674E127CE10BE00CC2A0E /* Stepper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760674E027CE10BE00CC2A0E /* Stepper.swift */; };
@@ -94,7 +93,6 @@
 		4BCF2EAF26FA3EA100CBC299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4BCF2EB126FA3EA100CBC299 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BCF2EBB26FA409000CBC299 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
-		4BD534C9271B4A69002A8936 /* AllListsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllListsViewController.swift; sourceTree = "<group>"; };
 		4BDF0AAC277E66E100573862 /* EditItemPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemPresenter.swift; sourceTree = "<group>"; };
 		4BDF0AAE2785ADE900573862 /* UITextView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+Extension.swift"; sourceTree = "<group>"; };
 		760674E027CE10BE00CC2A0E /* Stepper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stepper.swift; sourceTree = "<group>"; };
@@ -151,14 +149,6 @@
 				4B8ECE4D2752E8FD00396685 /* UserProfileCoordinator.swift */,
 			);
 			path = Coordinator;
-			sourceTree = "<group>";
-		};
-		03671BD72821AD7300857860 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				4BD534C9271B4A69002A8936 /* AllListsViewController.swift */,
-			);
-			path = Controller;
 			sourceTree = "<group>";
 		};
 		03671BD82821AD7B00857860 /* Presenter */ = {
@@ -276,7 +266,6 @@
 		4B8ECE542753969400396685 /* AllListsStory */ = {
 			isa = PBXGroup;
 			children = (
-				03671BD72821AD7300857860 /* Controller */,
 				03671BD82821AD7B00857860 /* Presenter */,
 				03671BD92821AD8700857860 /* Coordinator */,
 			);
@@ -613,7 +602,6 @@
 				762369E927AC676E006B1807 /* NumberFormatter+Extension.swift in Sources */,
 				76385ED0282864F0006A45DF /* SheetController.swift in Sources */,
 				76578579286EF44500320AFC /* LifecycleListener.swift in Sources */,
-				4BD534CA271B4A69002A8936 /* AllListsViewController.swift in Sources */,
 				4B9BC9F3270CBACF00F73DEC /* UIColor+Extension.swift in Sources */,
 				76578574286C4EED00320AFC /* RealmDataManager.swift in Sources */,
 			);

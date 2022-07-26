@@ -18,7 +18,7 @@ class AllListsCoordinator: NavigationCoordinator {
     }
     
     override func makeEntryPoint() -> UIViewController {
-        let view = AllListsViewController()
+        let view = ListViewController()
         let service = ListsDataServiceAdapter(service: dataManager) { [weak self] list in
             self?.select(list)
         }

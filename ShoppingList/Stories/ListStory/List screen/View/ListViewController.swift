@@ -7,9 +7,13 @@
 
 import UIKit
 
-protocol ListScreen: AnyObject {
+protocol AllListsScreen: AnyObject {
+    func reloadCells(with viewModels: [ListCell.ViewModel])
+}
+
+protocol ListScreen: AllListsScreen {
     
-    func configureCells(with items: [ListCell.ViewModel])
+    func reloadCells(with viewModels: [ListCell.ViewModel])
     func reloadCell(at indexPath: IndexPath, with item: ListCell.ViewModel)
     func insertItem(_ item: ListCell.ViewModel, at index: Int)
     func configureTitle(_ title: String)
@@ -64,8 +68,8 @@ extension ListViewController: ListScreen {
         collectionView.reloadData()
     }
     
-    func configureCells(with items: [ListCell.ViewModel]) {
-        self.items = items
+    func reloadCells(with viewModels: [ListCell.ViewModel]) {
+        self.items = viewModels
         collectionView.reloadData()
     }
     
@@ -73,8 +77,7 @@ extension ListViewController: ListScreen {
         items[indexPath.item] = item
 		UIView.performWithoutAnimation {
 			collectionView.reloadItems(at: [indexPath])
-		}
-
+        }
     }
     
     func configureTitle(_ title: String) {

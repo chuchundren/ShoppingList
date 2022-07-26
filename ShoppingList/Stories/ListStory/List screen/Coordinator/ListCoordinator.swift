@@ -105,7 +105,7 @@ extension ListCoordinator: AddItemCoordinatorOutput {
         let item = Item(title: title, isChecked: list.isRecentlyBoughtList, quantity: quantity)
         dataManager.save(item, into: list)
         
-		presenter?.reload()
+		presenter?.reloadView()
 	}
 
 }

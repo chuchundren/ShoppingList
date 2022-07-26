@@ -7,8 +7,6 @@
 
 import Foundation
 
-protocol AllListsScreenOutput {}
-
 protocol AllListsModuleInput: AnyObject {
     func reloadView()
 }
@@ -17,11 +15,11 @@ class AllListsPresenter {
     
     private var shoppingLists: [ListCell.ViewModel] = []
     
-    private unowned let view: AllListsScreen
+    private unowned let view: ListScreen
     private var coordinator: AllListsModuleOutput?
 	private var service: DataServiceAdapter
     
-	init(view: AllListsScreen, coordinator: AllListsModuleOutput, service: DataServiceAdapter) {
+	init(view: ListScreen, coordinator: AllListsModuleOutput, service: DataServiceAdapter) {
         self.view = view
         self.coordinator = coordinator
 		self.service = service
@@ -29,7 +27,7 @@ class AllListsPresenter {
     
     private func obtainLists() {
         shoppingLists = service.getViewModels()
-        view.configure(with: shoppingLists)
+        view.reloadCells(with: shoppingLists)
     }
     
 }
@@ -44,11 +42,11 @@ extension AllListsPresenter: LifecycleListener {
 
 // MARK: - AllListsPresenterProtocol
 
-extension AllListsPresenter: AllListsScreenOutput {}
+extension AllListsPresenter: ListScreenOutput {}
 
 extension AllListsPresenter: AllListsModuleInput {
     func reloadView() {
         shoppingLists = service.getViewModels()
-        view.configure(with: shoppingLists)
+        view.reloadCells(with: shoppingLists)
     }
 }

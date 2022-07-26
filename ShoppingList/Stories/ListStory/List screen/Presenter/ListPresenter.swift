@@ -12,7 +12,7 @@ protocol ListScreenOutput {}
 protocol ListModuleInput: AnyObject {
     func updateItem(_ item: Item)
     func deleteItem()
-    func reload()
+    func reloadView()
     func checkItem(id: String)
     func configureTitle(_ title: String)
 }
@@ -66,8 +66,9 @@ extension ListPresenter: ListModuleInput {
         }
     }
     
-    func reload() {
-        reloadView()
+    func reloadView() {
+        items = service.getViewModels()
+        view.reloadCells(with: items)
     }
     
     func checkItem(id: String) {
@@ -86,15 +87,4 @@ extension ListPresenter: ListModuleInput {
         view.configureTitle(title)
     }
 	
-}
-
-// MARK: - Private methods
-
-private extension ListPresenter {
-    
-    func reloadView() {
-        items = service.getViewModels()
-        view.configureCells(with: items)
-    }
-    
 }
