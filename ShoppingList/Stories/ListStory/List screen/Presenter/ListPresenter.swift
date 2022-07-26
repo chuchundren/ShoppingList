@@ -7,17 +7,14 @@
 
 import Foundation
 
-protocol ListScreenOutput {
-	func didAskToChangeTitle(newTitle: String)
-	func didAskToAddNewItem()
-	func didAskToDeleteList()
-}
+protocol ListScreenOutput {}
 
 protocol ListModuleInput: AnyObject {
     func updateItem(_ item: Item)
     func deleteItem()
     func reload()
     func checkItem(id: String)
+    func configureTitle(_ title: String)
 }
 
 class ListPresenter {
@@ -51,26 +48,7 @@ extension ListPresenter: LifecycleListener {
 
 // MARK: - ListPresenterProtocol
 
-extension ListPresenter: ListScreenOutput {
-    
-    func didAskToAddNewItem(_ item: Item) {
-        coordinator.didAskToSaveNewItem(item)
-        reloadView()
-    }
-
-	func didAskToChangeTitle(newTitle: String) {
-        coordinator.didAskToChangeTitle(to: newTitle)
-	}
-
-	func didAskToAddNewItem() {
-		coordinator.didAskToAddNewItem()
-	}
-
-	func didAskToDeleteList() {
-        coordinator.didAskToDeleteList()
-	}
-	
-}
+extension ListPresenter: ListScreenOutput {}
 
 // MARK: - ListModuleInput
 
@@ -102,6 +80,10 @@ extension ListPresenter: ListModuleInput {
         if let index = index {
             view.reloadCell(at: IndexPath(row: index, section: 0), with: items[index])
         }
+    }
+    
+    func configureTitle(_ title: String) {
+        view.configureTitle(title)
     }
 	
 }

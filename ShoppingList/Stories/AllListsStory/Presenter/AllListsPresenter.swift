@@ -7,9 +7,10 @@
 
 import Foundation
 
-protocol AllListsScreenOutput {
-    func obtainLists()
-    func didAskToAddNewList(with title: String)
+protocol AllListsScreenOutput {}
+
+protocol AllListsModuleInput: AnyObject {
+    func reloadView()
 }
 
 class AllListsPresenter {
@@ -26,6 +27,11 @@ class AllListsPresenter {
 		self.service = service
     }
     
+    private func obtainLists() {
+        shoppingLists = service.getViewModels()
+        view.configure(with: shoppingLists)
+    }
+    
 }
 
 extension AllListsPresenter: LifecycleListener {
@@ -38,17 +44,11 @@ extension AllListsPresenter: LifecycleListener {
 
 // MARK: - AllListsPresenterProtocol
 
-extension AllListsPresenter: AllListsScreenOutput {
-    
-    func obtainLists() {
-		shoppingLists = service.getViewModels()
-        view.configure(with: shoppingLists)
-    }
-    
-    func didAskToAddNewList(with title: String) {
-        coordinator?.didAskToAddNewList(with: title)
+extension AllListsPresenter: AllListsScreenOutput {}
+
+extension AllListsPresenter: AllListsModuleInput {
+    func reloadView() {
         shoppingLists = service.getViewModels()
         view.configure(with: shoppingLists)
     }
-    
 }

@@ -9,9 +9,6 @@ import UIKit
 
 protocol ListModuleOutput: AnyObject {
     func didAskToSaveNewItem(_ item: Item)
-	func didAskToAddNewItem()
-    func didAskToChangeTitle(to newTitle: String)
-    func didAskToDeleteList()
     func didAskToUpdateItem(id: String, newValue: Item)
     func didAskToDeleteItem(id: String)
 }
@@ -47,21 +44,23 @@ class ListCoordinator: NavigationCoordinator {
         
         view.presenter = presenter
         view.addLifecycleListener(presenter)
-        view.configureListNavBar(forRecent: list.isRecentlyBoughtList)
         view.tabBarItem.configure(tab: .list)
         view.title = list.title
+        
+        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonTapped))
+        let actionButton = list.isRecentlyBoughtList ? UIBarButtonItem(
+            barButtonSystemItem: .action,
+            target: self,
+            action: #selector(recentListActionButtonTapped)
+        ) : UIBarButtonItem(
+            barButtonSystemItem: .action,
+            target: self,
+            action: #selector(actionButtonTapped)
+        )
+        
+        view.navigationItem.rightBarButtonItems = [plusButton, actionButton]
        
         return view
-    }
-    
-    func checkItem(id: String) {
-        dataManager.toggleCheck(id: id)
-        presenter?.checkItem(id: id)
-    }
-    
-    func select(_ item: Item) {
-        let addNewItemCoordinator = EditItemCoordinator(item: item, output: self)
-        open(child: addNewItemCoordinator)
     }
     
 }
@@ -72,21 +71,6 @@ extension ListCoordinator: ListModuleOutput {
     
     func didAskToSaveNewItem(_ item: Item) {
         dataManager.save(item, into: list)
-    }
-
-	func didAskToAddNewItem() {
-		let addItemCoordinator = AddItemCoordinator(output: self)
-		let view = addItemCoordinator.makeEntryPoint()
-
-		navigationController.present(view, animated: true)
-	}
-    
-    func didAskToChangeTitle(to newTitle: String) {
-        dataManager.updateListTitle(id: list.id, newTitle: newTitle)
-    }
-    
-    func didAskToDeleteList() {
-        dataManager.deleteObject(ofType: ShoppingList.self, withId: list.id)
     }
     
     func didAskToUpdateItem(id: String, newValue: Item) {
@@ -124,4 +108,95 @@ extension ListCoordinator: AddItemCoordinatorOutput {
 		presenter?.reload()
 	}
 
+}
+
+private extension ListCoordinator {
+    
+    func checkItem(id: String) {
+        dataManager.toggleCheck(id: id)
+        presenter?.checkItem(id: id)
+    }
+    
+    func select(_ item: Item) {
+        let addNewItemCoordinator = EditItemCoordinator(item: item, output: self)
+        open(child: addNewItemCoordinator)
+    }
+    
+    func presentChangeTitleAlert() {
+        let alert = UIAlertController(title: "Enter new title", message: nil, preferredStyle: .alert)
+        alert.addTextField()
+        alert.addAction(
+            UIAlertAction(title: "Ok", style: .default) { [weak self] _ in
+                if let title = alert.textFields?.first?.text {
+                    guard let self = self else { return }
+                    
+                    self.dataManager.updateListTitle(id: self.list.id, newTitle: title)
+                    
+                    self.presenter?.configureTitle(title)
+                }
+            }
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        navigationController.present(alert, animated: true)
+    }
+
+    func presentSheetController() {
+        let addItemCoordinator = AddItemCoordinator(output: self)
+        let view = addItemCoordinator.makeEntryPoint()
+
+        navigationController.present(view, animated: true)
+    }
+    
+    
+    func presentActionSheet(actions: [UIAlertAction]) {
+        let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in actions {
+            ac.addAction(action)
+        }
+        
+        navigationController.present(ac, animated: true)
+    }
+    
+    func deleteAction() -> UIAlertAction {
+        UIAlertAction(title: "Delete list", style: .destructive) { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            
+            self.dataManager.deleteObject(ofType: ShoppingList.self, withId: self.list.id)
+            
+            self.navigationController.popViewController(animated: true)
+        }
+    }
+    
+    func editAction() -> UIAlertAction {
+        UIAlertAction(title: "Change list name", style: .default) { [weak self] _ in
+            self?.presentChangeTitleAlert()
+        }
+    }
+    
+    func activityAction() -> UIAlertAction {
+        UIAlertAction(title: "Share", style: .default) { [weak self] _ in
+            let activityVC = UIActivityViewController(activityItems: [], applicationActivities: nil)
+            self?.navigationController.present(activityVC, animated: true)
+        }
+    }
+    
+    func cancelAction() -> UIAlertAction {
+        UIAlertAction(title: "Cancel", style: .cancel)
+    }
+    
+    @objc func addItemButtonTapped() {
+        presentSheetController()
+    }
+
+    @objc func actionButtonTapped() {
+        presentActionSheet(actions: [activityAction(), editAction(), deleteAction(), cancelAction()])
+    }
+    
+    @objc func recentListActionButtonTapped() {
+        presentActionSheet(actions: [activityAction(), cancelAction()])
+    }
+    
 }

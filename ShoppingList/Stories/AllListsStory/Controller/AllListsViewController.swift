@@ -35,12 +35,6 @@ class AllListsViewController: BaseScreen {
         configureGradient(in: title)
     }
     
-    func configureNavigationBar() {
-        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newListButtonTapped))
-        navigationItem.rightBarButtonItem = plusButton
-    }
-    
-    
 }
 
 
@@ -141,29 +135,6 @@ extension AllListsViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-    
-    // MARK:
-    
-    private func presentNewListAlert() {
-        let alert = UIAlertController(title: "New List", message: "Enter your new list's title.", preferredStyle: .alert)
-        alert.addTextField()
-        alert.addAction(
-            UIAlertAction(title: "Add", style: .default) { [weak self] _ in
-                if let title = alert.textFields?.first?.text, !title.isEmpty {
-                    self?.presenter?.didAskToAddNewList(with: title)
-                }
-			}
-        )
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        present(alert, animated: true)
-    }
-    
-    // MARK: - Selectors
-    
-    @objc func newListButtonTapped() {
-        presentNewListAlert()
     }
     
 }

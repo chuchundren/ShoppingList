@@ -12,6 +12,7 @@ protocol ListScreen: AnyObject {
     func configureCells(with items: [ListCell.ViewModel])
     func reloadCell(at indexPath: IndexPath, with item: ListCell.ViewModel)
     func insertItem(_ item: ListCell.ViewModel, at index: Int)
+    func configureTitle(_ title: String)
     
 }
 
@@ -52,21 +53,6 @@ class ListViewController: BaseScreen {
         configureGradient(in: title)
     }
     
-    func configureListNavBar(forRecent: Bool) {
-        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonTapped))
-        let actionButton = forRecent ? UIBarButtonItem(
-            barButtonSystemItem: .action,
-            target: self,
-            action: #selector(recentListActionButtonTapped)
-        ) : UIBarButtonItem(
-            barButtonSystemItem: .action,
-            target: self,
-            action: #selector(actionButtonTapped)
-        )
-        
-        navigationItem.rightBarButtonItems = [plusButton, actionButton]
-    }
-    
 }
 
 // MARK: - ListControllerProtocol
@@ -89,6 +75,11 @@ extension ListViewController: ListScreen {
 			collectionView.reloadItems(at: [indexPath])
 		}
 
+    }
+    
+    func configureTitle(_ title: String) {
+        self.title = title
+        configureGradient(in: title)
     }
     
 }
@@ -126,77 +117,6 @@ private extension ListViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
-    }
-    
-    func changeTitleAlert() {
-        let alert = UIAlertController(title: "Enter new title", message: nil, preferredStyle: .alert)
-        alert.addTextField()
-        alert.addAction(
-            UIAlertAction(title: "Ok", style: .default) { [weak self] _ in
-                if let title = alert.textFields?.first?.text {
-					self?.presenter?.didAskToChangeTitle(newTitle: title)
-					self?.title = title
-					self?.configureGradient(in: title)
-                }
-            }
-        )
-        
-		alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-		present(alert, animated: true)
-	}
-
-	func showSheetController() {
-		presenter?.didAskToAddNewItem()
-	}
-    
-    // MARK: Selectors
-    
-    @objc func reload() {
-        collectionView.reloadData()
-    }
-    
-    @objc func addItemButtonTapped() {
-        showSheetController()
-    }
-
-	@objc func actionButtonTapped() {
-        presentActionSheet(actions: [activityAction(), editAction(), deleteAction(), cancelAction()])
-	}
-    
-    @objc func recentListActionButtonTapped() {
-        presentActionSheet(actions: [activityAction(), cancelAction()])
-    }
-    
-    func presentActionSheet(actions: [UIAlertAction]) {
-        let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in actions {
-            ac.addAction(action)
-        }
-        present(ac, animated: true)
-    }
-    
-    func deleteAction() -> UIAlertAction {
-        UIAlertAction(title: "Delete list", style: .destructive) { [weak self] _ in
-            self?.presenter?.didAskToDeleteList()
-            self?.navigationController?.popViewController(animated: true)
-        }
-    }
-    
-    func editAction() -> UIAlertAction {
-        UIAlertAction(title: "Change list name", style: .default) { [weak self] _ in
-            self?.changeTitleAlert()
-        }
-    }
-    
-    func activityAction() -> UIAlertAction {
-        UIAlertAction(title: "Share", style: .default) { [weak self] _ in
-            let activityVC = UIActivityViewController(activityItems: [], applicationActivities: nil)
-            self?.present(activityVC, animated: true)
-        }
-    }
-    
-    func cancelAction() -> UIAlertAction {
-        UIAlertAction(title: "Cancel", style: .cancel)
     }
     
 }
