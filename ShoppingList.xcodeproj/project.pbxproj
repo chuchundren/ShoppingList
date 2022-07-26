@@ -10,6 +10,7 @@
 		03671BCD281DC19F00857860 /* TimePeriodPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03671BCC281DC19F00857860 /* TimePeriodPopover.swift */; };
 		03671BD12821469500857860 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03671BD02821469500857860 /* ProfilePresenter.swift */; };
 		03F20494281448F10039DE40 /* ExpensesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F20493281448F10039DE40 /* ExpensesCell.swift */; };
+		4B1AA5CB288F3EFB002EFEB9 /* DataServiceAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1AA5CA288F3EFB002EFEB9 /* DataServiceAdapter.swift */; };
 		4B1C51B82765F1C600489B7E /* ListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C51B72765F1C600489B7E /* ListLayout.swift */; };
 		4B62FA2C276FCBC900E65683 /* EditItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B62FA2B276FCBC900E65683 /* EditItemViewController.swift */; };
 		4B62FA2E276FD3E800E65683 /* EditItemCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B62FA2D276FD3E800E65683 /* EditItemCoordinator.swift */; };
@@ -64,6 +65,7 @@
 		03671BCC281DC19F00857860 /* TimePeriodPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePeriodPopover.swift; sourceTree = "<group>"; };
 		03671BD02821469500857860 /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
 		03F20493281448F10039DE40 /* ExpensesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpensesCell.swift; sourceTree = "<group>"; };
+		4B1AA5CA288F3EFB002EFEB9 /* DataServiceAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataServiceAdapter.swift; sourceTree = "<group>"; };
 		4B1C51B72765F1C600489B7E /* ListLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListLayout.swift; sourceTree = "<group>"; };
 		4B62FA2B276FCBC900E65683 /* EditItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewController.swift; sourceTree = "<group>"; };
 		4B62FA2D276FD3E800E65683 /* EditItemCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemCoordinator.swift; sourceTree = "<group>"; };
@@ -464,6 +466,7 @@
 		76578577286EF42300320AFC /* DataManager */ = {
 			isa = PBXGroup;
 			children = (
+				4B1AA5CA288F3EFB002EFEB9 /* DataServiceAdapter.swift */,
 				76578573286C4EED00320AFC /* RealmDataManager.swift */,
 				76578575286C4F8C00320AFC /* DataManager.swift */,
 			);
@@ -572,6 +575,7 @@
 				4B8ECE4C2752E8F000396685 /* AllListsCoordinator.swift in Sources */,
 				76578576286C4F8C00320AFC /* DataManager.swift in Sources */,
 				4BA6A75727613786000D2ACD /* ShoppingList.swift in Sources */,
+				4B1AA5CB288F3EFB002EFEB9 /* DataServiceAdapter.swift in Sources */,
 				4B62FA2C276FCBC900E65683 /* EditItemViewController.swift in Sources */,
 				763C4E07286094F000F0134E /* AddItemCoordinator.swift in Sources */,
 				4B8ECE482752D68400396685 /* MainCoordinator.swift in Sources */,

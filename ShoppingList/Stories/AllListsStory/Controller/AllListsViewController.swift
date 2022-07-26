@@ -27,7 +27,6 @@ class AllListsViewController: BaseScreen {
         
         setupView()
         setupCollectionView()
-        setupNavigationBar()
         setupLayout()
     }
     
@@ -35,6 +34,12 @@ class AllListsViewController: BaseScreen {
         super.viewWillAppear(animated)
         configureGradient(in: title)
     }
+    
+    func configureNavigationBar() {
+        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newListButtonTapped))
+        navigationItem.rightBarButtonItem = plusButton
+    }
+    
     
 }
 
@@ -77,7 +82,8 @@ extension AllListsViewController: UICollectionViewDataSource {
 extension AllListsViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presenter?.openShoppingList(at: indexPath.item)
+        let list = shoppingLists[indexPath.item]
+        list.select()
     }
     
 }
@@ -121,13 +127,6 @@ extension AllListsViewController {
         if let layout = collectionView.collectionViewLayout as? ListLayout {
             layout.delegate = self
         }
-    }
-    
-    func setupNavigationBar() {
-        title = "All Lists"
-        
-        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newListButtonTapped))
-        navigationItem.rightBarButtonItem = plusButton
     }
     
     // MARK: Layout

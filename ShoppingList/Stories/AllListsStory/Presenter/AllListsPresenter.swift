@@ -10,30 +10,21 @@ import Foundation
 protocol AllListsScreenOutput {
     func obtainLists()
     func didAskToAddNewList(with title: String)
-	func openShoppingList(at index: Int)
 }
 
 class AllListsPresenter {
     
-	private var shoppingLists: [ShoppingList] = []
+    private var shoppingLists: [ListCell.ViewModel] = []
     
     private unowned let view: AllListsScreen
     private var coordinator: AllListsModuleOutput?
-	private var dataManager: DataManager
+	private var service: DataServiceAdapter
     
-	init(view: AllListsScreen, coordinator: AllListsModuleOutput, dataManager: DataManager = RealmDataManager.shared) {
+	init(view: AllListsScreen, coordinator: AllListsModuleOutput, service: DataServiceAdapter) {
         self.view = view
         self.coordinator = coordinator
-		self.dataManager = dataManager
+		self.service = service
     }
-	
-	private func configureView() {
-		 let viewModels = shoppingLists.map { list in
-			ListCell.ViewModel(list: list)
-		}
-		
-		view.configure(with: viewModels)
-	}
     
 }
 
@@ -50,24 +41,14 @@ extension AllListsPresenter: LifecycleListener {
 extension AllListsPresenter: AllListsScreenOutput {
     
     func obtainLists() {
-		shoppingLists = dataManager.shoppingLists()
-		configureView()
+		shoppingLists = service.getViewModels()
+        view.configure(with: shoppingLists)
     }
     
     func didAskToAddNewList(with title: String) {
-		let newList = ShoppingList(title: title)
-		dataManager.save(newList)
-		shoppingLists = dataManager.shoppingLists()
-        
-        configureView()
-
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-			self.coordinator?.openShoppingList(newList)
-		}
+        coordinator?.didAskToAddNewList(with: title)
+        shoppingLists = service.getViewModels()
+        view.configure(with: shoppingLists)
     }
-	
-	func openShoppingList(at index: Int) {
-		coordinator?.openShoppingList(shoppingLists[index])
-	}
     
 }

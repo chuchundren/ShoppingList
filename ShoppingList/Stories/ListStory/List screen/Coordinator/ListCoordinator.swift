@@ -8,7 +8,6 @@
 import UIKit
 
 protocol ListModuleOutput: AnyObject {
-    func didSelectItem(at index: Int)
     func didAskToSaveNewItem(_ item: Item)
 	func didAskToAddNewItem()
     func didAskToChangeTitle(to newTitle: String)
@@ -34,7 +33,9 @@ class ListCoordinator: NavigationCoordinator {
             service: dataManager,
             shoppingListId: list.id,
             check: list.isRecentlyBoughtList ? nil : checkItem
-        )
+        ) { [weak self] item in
+            self?.select(item)
+        }
         
         let presenter = ListPresenter(
             view: view,
@@ -58,16 +59,16 @@ class ListCoordinator: NavigationCoordinator {
         presenter?.checkItem(id: id)
     }
     
+    func select(_ item: Item) {
+        let addNewItemCoordinator = EditItemCoordinator(item: item, output: self)
+        open(child: addNewItemCoordinator)
+    }
+    
 }
 
 // MARK: - ListModuleOutput
     
 extension ListCoordinator: ListModuleOutput {
-    
-    func didSelectItem(at index: Int) {
-        let addNewItemCoordinator = EditItemCoordinator(item: list.items[index], output: self)
-        open(child: addNewItemCoordinator)
-    }
     
     func didAskToSaveNewItem(_ item: Item) {
         dataManager.save(item, into: list)

@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ListScreenOutput {
-    func didSelectItem(at indexPath: IndexPath)
 	func didAskToChangeTitle(newTitle: String)
 	func didAskToAddNewItem()
 	func didAskToDeleteList()
@@ -53,11 +52,6 @@ extension ListPresenter: LifecycleListener {
 // MARK: - ListPresenterProtocol
 
 extension ListPresenter: ListScreenOutput {
-    
-    func didSelectItem(at indexPath: IndexPath) {
-        selectedIndexPath = indexPath
-        coordinator.didSelectItem(at: indexPath.item)
-    }
     
     func didAskToAddNewItem(_ item: Item) {
         coordinator.didAskToSaveNewItem(item)

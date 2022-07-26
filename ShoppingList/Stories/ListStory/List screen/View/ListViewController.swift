@@ -229,7 +229,8 @@ extension ListViewController: UICollectionViewDataSource {
 
 extension ListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presenter?.didSelectItem(at: indexPath)
+        let item = items[indexPath.item]
+        item.select()
     }
 }
 

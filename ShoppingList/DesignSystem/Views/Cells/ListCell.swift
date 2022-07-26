@@ -163,12 +163,12 @@ extension ListCell {
         let title: NSAttributedString
         let subtitle: String?
         let id: String
-        
+        let select: () -> Void
         let check: ((String) -> Void)?
         let quantity: String?
         var isChecked: Bool?
         
-        init(list: ShoppingList) {
+        init(list: ShoppingList, select: @escaping () -> Void) {
             title = list.title.attributed()
             
             let shouldBeSingular = list.items.count % 10 == 1
@@ -177,15 +177,18 @@ extension ListCell {
             check = nil
             quantity = nil
             isChecked = nil
+            self.select = select
         }
         
-        init(item: Item, check: ((String) -> Void)?) {
+        init(item: Item, check: ((String) -> Void)?, select: @escaping () -> Void) {
             title = item.isChecked ? item.title.strikeThrough() : item.title.attributed()
             subtitle = item.itemDescription
             id = item.id
             quantity = "X\(item.quantity)"
             isChecked = item.isChecked
+            
             self.check = check
+            self.select = select
         }
     }
     
